@@ -14,7 +14,7 @@ import {
   Separator,
 } from 'noorui-rtl'
 import { Plus, Eye, Edit, ExternalLink, Calendar, User, Tag, Clock } from 'lucide-react'
-import { format } from 'date-fns'
+import { formatDate } from '@/lib/utils'
 import { PostsTable } from '@/components/admin/posts-table'
 import type { Locale, PostWithRelations } from '@/lib/supabase/types'
 
@@ -349,7 +349,7 @@ export function PostsListContent({ locale, posts }: PostsListContentProps) {
                       <p className="text-xs text-muted-foreground">{t.createdAt}</p>
                       <p className="font-medium">
                         {selectedPost.created_at
-                          ? format(new Date(selectedPost.created_at), 'MMM d, yyyy')
+                          ? formatDate(selectedPost.created_at, locale, { format: 'short' })
                           : '-'}
                       </p>
                     </div>
@@ -361,7 +361,7 @@ export function PostsListContent({ locale, posts }: PostsListContentProps) {
                       <div>
                         <p className="text-xs text-muted-foreground">{t.publishedAt}</p>
                         <p className="font-medium">
-                          {format(new Date(selectedPost.published_at), 'MMM d, yyyy')}
+                          {formatDate(selectedPost.published_at, locale, { format: 'short' })}
                         </p>
                       </div>
                     </div>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { format } from 'date-fns'
+import { formatDate } from '@/lib/utils'
 import type { ReactNode } from 'react'
 import {
   Breadcrumb,
@@ -21,8 +21,9 @@ import {
   AvatarFallback,
   Separator,
   Button,
+  ButtonArrow,
 } from 'noorui-rtl'
-import { Clock, Eye, ArrowLeft, Share2 } from 'lucide-react'
+import { Clock, Eye, Share2 } from 'lucide-react'
 import type { Locale, PostWithRelations } from '@/lib/supabase/types'
 import { TableOfContents } from '@/components/blog/table-of-contents'
 
@@ -111,7 +112,7 @@ export function PostPageClient({ locale, post, relatedPosts, mdxContent }: PostP
                 {post.view_count}
               </span>
               <span>
-                {post.published_at && format(new Date(post.published_at), 'MMMM d, yyyy')}
+                {post.published_at && formatDate(post.published_at, locale, { format: 'medium' })}
               </span>
             </div>
 
@@ -170,21 +171,11 @@ export function PostPageClient({ locale, post, relatedPosts, mdxContent }: PostP
 
           {/* Share & Back */}
           <div className="flex items-center justify-between">
-            <Button variant="outline" asChild>
+            <ButtonArrow variant="outline" direction="back" icon="arrow" asChild>
               <Link href={'/' + locale + '/blog'}>
-                {isRTL ? (
-                  <>
-                    {text.back}
-                    <ArrowLeft className="ms-2 h-4 w-4 rotate-180" />
-                  </>
-                ) : (
-                  <>
-                    <ArrowLeft className="me-2 h-4 w-4" />
-                    {text.back}
-                  </>
-                )}
+                {text.back}
               </Link>
-            </Button>
+            </ButtonArrow>
 
             <Button variant="ghost" onClick={handleShare}>
               <Share2 className="me-2 h-4 w-4" />

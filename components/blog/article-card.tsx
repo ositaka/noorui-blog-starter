@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { format } from 'date-fns'
+import { formatDate } from '@/lib/utils'
 import {
   Card,
   CardHeader,
@@ -81,7 +81,7 @@ export function ArticleCard({ post, locale = 'en', featured = false }: ArticleCa
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{authorName}</p>
                 <p className="text-xs text-muted-foreground">
-                  {post.published_at && format(new Date(post.published_at), 'MMM d, yyyy')}
+                  {post.published_at && formatDate(post.published_at, locale, { format: 'short' })}
                 </p>
               </div>
             </div>

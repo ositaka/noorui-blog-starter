@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { format } from 'date-fns'
+import { formatDate } from '@/lib/utils'
 import {
   Badge,
   Button,
@@ -296,7 +296,7 @@ export function PostsTable({
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm">
                         {post.published_at
-                          ? format(new Date(post.published_at), 'MMM d, yyyy')
+                          ? formatDate(post.published_at, locale, { format: 'short' })
                           : '-'}
                       </span>
                     </div>

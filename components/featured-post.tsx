@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { Badge, Button } from 'noorui-rtl'
-import { Clock, Eye, MessageSquare, ArrowRight } from 'lucide-react'
-import { format } from 'date-fns'
+import { Badge, ButtonArrow } from 'noorui-rtl'
+import { Clock, Eye, MessageSquare } from 'lucide-react'
+import { formatDate } from '@/lib/utils'
 import type { Post } from '@/lib/posts'
 import { useDirection } from 'noorui-rtl'
 
@@ -47,16 +47,15 @@ export function FeaturedPost({ post }: FeaturedPostProps) {
           <span className="font-medium">{isRTL ? post.authorAr : post.author}</span>
           <span className="text-muted-foreground">•</span>
           <span className="text-muted-foreground">
-            {format(new Date(post.publishedAt), 'MMMM dd, yyyy')}
+            {formatDate(post.publishedAt, isRTL ? 'ar' : 'en', { format: 'medium' })}
           </span>
         </div>
 
-        <Link href={`/blog/${post.slug}`}>
-          <Button size="lg">
+        <ButtonArrow size="lg" direction="forward" icon="arrow" asChild>
+          <Link href={`/blog/${post.slug}`}>
             Read Article
-            <ArrowRight className="ms-2 h-4 w-4" />
-          </Button>
-        </Link>
+          </Link>
+        </ButtonArrow>
       </div>
 
       <div className="absolute top-0 end-0 w-1/2 h-full bg-gradient-to-l from-primary/10 to-transparent -z-10 hidden md:block" />

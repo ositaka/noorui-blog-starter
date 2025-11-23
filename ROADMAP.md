@@ -374,6 +374,12 @@ Description of each variant with visual examples.
 #### Fixed in noorui-rtl v0.3.13
 - [x] **RichTextEditor jsx attribute console error** - Fixed `jsx` attribute console error in Next.js 16 with Turbopack. Replaced styled-jsx with standard `dangerouslySetInnerHTML` for inline styles.
 
+#### Added in noorui-rtl v0.3.14
+- [x] **ButtonArrow component** - New button variant with semantic direction support (`forward`/`back`). Arrows automatically flip in RTL mode using `rtl:rotate-180`. Replaces the need for manual arrow icon handling with direction-aware buttons.
+
+#### Added in Kitab v0.1.x
+- [x] **Localized date formatting** - Dates now display in Arabic format (e.g., "٢٢ نوفمبر ٢٠٢٥") when in Arabic locale. Uses `Intl.DateTimeFormat` with locale-aware month names and numerals. Created `formatDate` utility in `lib/utils.ts`.
+
 #### From Phase 5
 - [ ] `SearchModal`
 - [ ] `SearchInput`

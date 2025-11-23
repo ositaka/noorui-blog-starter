@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, Badge } from 'noorui-rtl'
 import { Clock, Eye, MessageSquare } from 'lucide-react'
-import { format } from 'date-fns'
+import { formatDate } from '@/lib/utils'
 import type { Post } from '@/lib/posts'
 import { useDirection } from 'noorui-rtl'
 
@@ -47,7 +47,7 @@ export function BlogCard({ post }: BlogCardProps) {
           <div className="mt-4 text-sm text-muted-foreground">
             <span>{isRTL ? post.authorAr : post.author}</span>
             <span className="mx-2">•</span>
-            <span>{format(new Date(post.publishedAt), 'MMM dd, yyyy')}</span>
+            <span>{formatDate(post.publishedAt, isRTL ? 'ar' : 'en', { format: 'short' })}</span>
           </div>
         </CardContent>
       </Card>

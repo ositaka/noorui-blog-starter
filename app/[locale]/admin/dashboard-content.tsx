@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { format } from 'date-fns'
+import { formatDate } from '@/lib/utils'
 import {
   Card,
   CardContent,
@@ -10,6 +10,7 @@ import {
   CardTitle,
   Badge,
   Button,
+  ButtonArrow,
   Table,
   TableBody,
   TableCell,
@@ -22,20 +23,11 @@ import {
   Eye,
   Send,
   FileEdit,
-  ArrowRight,
-  ArrowLeft,
   Plus,
 } from 'lucide-react'
 import { StatsCard } from '@/components/admin/stats-card'
 import type { Locale, PostWithRelations } from '@/lib/supabase/types'
 import type { AdminStats } from '@/lib/supabase/admin-api'
-
-const localeConfig: Record<Locale, { dir: 'ltr' | 'rtl' }> = {
-  en: { dir: 'ltr' },
-  fr: { dir: 'ltr' },
-  ar: { dir: 'rtl' },
-  ur: { dir: 'rtl' },
-}
 
 const translations: Record<Locale, {
   dashboard: string
@@ -145,9 +137,6 @@ export function DashboardContent({
   recentPosts,
 }: DashboardContentProps) {
   const t = translations[locale]
-  const config = localeConfig[locale]
-  const isRTL = config.dir === 'rtl'
-  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight
 
   return (
     <div className="space-y-8 p-6">
@@ -196,12 +185,11 @@ export function DashboardContent({
             <CardTitle>{t.recentPosts}</CardTitle>
             <CardDescription>{t.recentPostsDescription}</CardDescription>
           </div>
-          <Button variant="outline" size="sm" asChild>
+          <ButtonArrow variant="outline" size="sm" direction="forward" icon="arrow" asChild>
             <Link href={`/${locale}/admin/posts`}>
               {t.viewAll}
-              <ArrowIcon className="h-4 w-4 ms-2" />
             </Link>
-          </Button>
+          </ButtonArrow>
         </CardHeader>
         <CardContent>
           {recentPosts.length === 0 ? (
@@ -257,7 +245,7 @@ export function DashboardContent({
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {post.created_at
-                        ? format(new Date(post.created_at), 'MMM d, yyyy')
+                        ? formatDate(post.created_at, locale, { format: 'short' })
                         : '-'}
                     </TableCell>
                   </TableRow>
