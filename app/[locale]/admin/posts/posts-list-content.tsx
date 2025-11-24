@@ -3,6 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import {
   Button,
   Sheet,
@@ -12,10 +13,17 @@ import {
   SheetDescription,
   Badge,
   Separator,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from 'noorui-rtl'
-import { Plus, Eye, Edit, ExternalLink, Calendar, User, Tag, Clock } from 'lucide-react'
+import { Plus, Eye, Edit, ExternalLink, Calendar, User, Tag, Clock, Trash2 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { PostsTable } from '@/components/admin/posts-table'
+import { deletePostAction } from './actions'
 import type { Locale, PostWithRelations } from '@/lib/supabase/types'
 
 const localeConfig: Record<Locale, { dir: 'ltr' | 'rtl' }> = {
@@ -46,6 +54,13 @@ const translations: Record<Locale, {
   noTags: string
   excerpt: string
   noExcerpt: string
+  deletePost: string
+  deleteConfirmTitle: string
+  deleteConfirmDescription: string
+  deleteCancel: string
+  deleteConfirm: string
+  deleteSuccess: string
+  deleteError: string
   tableTranslations: {
     title: string
     author: string
@@ -84,6 +99,13 @@ const translations: Record<Locale, {
     noTags: 'No tags',
     excerpt: 'Excerpt',
     noExcerpt: 'No excerpt provided',
+    deletePost: 'Delete Post',
+    deleteConfirmTitle: 'Delete Post?',
+    deleteConfirmDescription: 'This action cannot be undone. This will permanently delete the post and all its translations.',
+    deleteCancel: 'Cancel',
+    deleteConfirm: 'Delete',
+    deleteSuccess: 'Post deleted successfully',
+    deleteError: 'Failed to delete post',
     tableTranslations: {
       title: 'Title',
       author: 'Author',
@@ -122,6 +144,13 @@ const translations: Record<Locale, {
     noTags: 'Aucun tag',
     excerpt: 'Extrait',
     noExcerpt: 'Aucun extrait fourni',
+    deletePost: 'Supprimer l\'article',
+    deleteConfirmTitle: 'Supprimer l\'article ?',
+    deleteConfirmDescription: 'Cette action est irréversible. L\'article et toutes ses traductions seront définitivement supprimés.',
+    deleteCancel: 'Annuler',
+    deleteConfirm: 'Supprimer',
+    deleteSuccess: 'Article supprimé avec succès',
+    deleteError: 'Erreur lors de la suppression',
     tableTranslations: {
       title: 'Titre',
       author: 'Auteur',
@@ -160,6 +189,13 @@ const translations: Record<Locale, {
     noTags: 'لا توجد وسوم',
     excerpt: 'المقتطف',
     noExcerpt: 'لا يوجد مقتطف',
+    deletePost: 'حذف المنشور',
+    deleteConfirmTitle: 'حذف المنشور؟',
+    deleteConfirmDescription: 'لا يمكن التراجع عن هذا الإجراء. سيتم حذف المنشور وجميع ترجماته نهائياً.',
+    deleteCancel: 'إلغاء',
+    deleteConfirm: 'حذف',
+    deleteSuccess: 'تم حذف المنشور بنجاح',
+    deleteError: 'فشل في حذف المنشور',
     tableTranslations: {
       title: 'العنوان',
       author: 'الكاتب',
@@ -198,6 +234,13 @@ const translations: Record<Locale, {
     noTags: 'کوئی ٹیگز نہیں',
     excerpt: 'اقتباس',
     noExcerpt: 'کوئی اقتباس فراہم نہیں کیا گیا',
+    deletePost: 'پوسٹ حذف کریں',
+    deleteConfirmTitle: 'پوسٹ حذف کریں؟',
+    deleteConfirmDescription: 'یہ عمل واپس نہیں ہو سکتا۔ پوسٹ اور اس کے تمام تراجم مستقل طور پر حذف ہو جائیں گے۔',
+    deleteCancel: 'منسوخ',
+    deleteConfirm: 'حذف',
+    deleteSuccess: 'پوسٹ کامیابی سے حذف ہو گئی',
+    deleteError: 'پوسٹ حذف کرنے میں ناکامی',
     tableTranslations: {
       title: 'عنوان',
       author: 'مصنف',
@@ -233,6 +276,9 @@ export function PostsListContent({ locale, posts }: PostsListContentProps) {
 
   const [selectedPost, setSelectedPost] = React.useState<PostWithRelations | null>(null)
   const [sheetOpen, setSheetOpen] = React.useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
+  const [postToDelete, setPostToDelete] = React.useState<PostWithRelations | null>(null)
+  const [isDeleting, setIsDeleting] = React.useState(false)
 
   const handleEditPost = (post: PostWithRelations) => {
     setSelectedPost(post)
@@ -245,6 +291,46 @@ export function PostsListContent({ locale, posts }: PostsListContentProps) {
     }
   }
 
+  const handleDeleteRequest = (post: PostWithRelations) => {
+    setPostToDelete(post)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!postToDelete) return
+
+    setIsDeleting(true)
+    try {
+      const result = await deletePostAction(postToDelete.id)
+
+      // Check if there's an actual error value (not just the key existing with null)
+      if (result && result.error) {
+        toast.error(t.deleteError, {
+          description: result.error,
+        })
+      } else {
+        toast.success(t.deleteSuccess, {
+          description: postToDelete.title,
+        })
+        // Close the sheet if the deleted post was selected
+        if (selectedPost?.id === postToDelete.id) {
+          setSheetOpen(false)
+          setSelectedPost(null)
+        }
+        // Refresh the page to update the posts list
+        router.refresh()
+      }
+    } catch (error) {
+      toast.error(t.deleteError, {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      })
+    } finally {
+      setIsDeleting(false)
+      setDeleteDialogOpen(false)
+      setPostToDelete(null)
+    }
+  }
+
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
@@ -254,7 +340,7 @@ export function PostsListContent({ locale, posts }: PostsListContentProps) {
           <p className="text-muted-foreground">{t.manageAllPosts}</p>
         </div>
         <Button asChild>
-          <Link href={`/${locale}/admin/posts/new`}>
+          <Link href={`/${locale}/admin/posts/new`} className="inline-flex items-center">
             <Plus className="h-4 w-4 me-2" />
             {t.createNew}
           </Link>
@@ -267,6 +353,7 @@ export function PostsListContent({ locale, posts }: PostsListContentProps) {
         locale={locale}
         translations={t.tableTranslations}
         onEdit={handleEditPost}
+        onDelete={handleDeleteRequest}
       />
 
       {/* Sliding Panel for Post Details */}
@@ -413,12 +500,53 @@ export function PostsListContent({ locale, posts }: PostsListContentProps) {
                       {t.viewOnSite}
                     </Link>
                   </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleDeleteRequest(selectedPost)}
+                  >
+                    <Trash2 className="h-4 w-4 me-2" />
+                    {t.deletePost}
+                  </Button>
                 </div>
               </div>
             </>
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t.deleteConfirmTitle}</DialogTitle>
+            <DialogDescription>
+              {t.deleteConfirmDescription}
+            </DialogDescription>
+          </DialogHeader>
+          {postToDelete && (
+            <div className="py-2">
+              <p className="font-medium">{postToDelete.title}</p>
+              <p className="text-sm text-muted-foreground">/{postToDelete.slug}</p>
+            </div>
+          )}
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={isDeleting}
+            >
+              {t.deleteCancel}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+            >
+              {isDeleting ? '...' : t.deleteConfirm}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

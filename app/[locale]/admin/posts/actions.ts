@@ -2,6 +2,7 @@
 
 import type { Locale } from '@/lib/supabase/types'
 import { isAdmin } from '@/lib/supabase/auth'
+import { createClient } from '@/lib/supabase/server'
 import {
   createPost as createPostApi,
   updatePost as updatePostApi,
@@ -81,4 +82,92 @@ export async function unpublishPostAction(postId: string) {
   if (authError) return authError
 
   return unpublishPostApi(postId)
+}
+
+/**
+ * Upload an image to Supabase Storage
+ * Returns the public URL of the uploaded image
+ */
+export async function uploadImageAction(formData: FormData) {
+  const authError = await requireAdmin()
+  if (authError) return authError
+
+  const file = formData.get('file') as File
+  if (!file) {
+    return { error: 'No file provided' }
+  }
+
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    return { error: 'File must be an image' }
+  }
+
+  // Validate file size (5MB max)
+  const maxSize = 5 * 1024 * 1024
+  if (file.size > maxSize) {
+    return { error: 'File size must be less than 5MB' }
+  }
+
+  const supabase = await createClient()
+
+  // Generate a unique filename
+  const timestamp = Date.now()
+  const randomId = Math.random().toString(36).substring(2, 8)
+  const extension = file.name.split('.').pop() || 'jpg'
+  const filename = `${timestamp}-${randomId}.${extension}`
+  const path = `posts/${filename}`
+
+  // Convert file to buffer for upload
+  const bytes = await file.arrayBuffer()
+  const buffer = new Uint8Array(bytes)
+
+  // Upload to Supabase Storage
+  const { data, error } = await supabase.storage
+    .from('images')
+    .upload(path, buffer, {
+      contentType: file.type,
+      upsert: false,
+    })
+
+  if (error) {
+    console.error('Upload error:', error)
+    return { error: `Upload failed: ${error.message}` }
+  }
+
+  // Get the public URL
+  const { data: urlData } = supabase.storage
+    .from('images')
+    .getPublicUrl(data.path)
+
+  return { url: urlData.publicUrl }
+}
+
+/**
+ * Delete an image from Supabase Storage
+ */
+export async function deleteImageAction(url: string) {
+  const authError = await requireAdmin()
+  if (authError) return authError
+
+  const supabase = await createClient()
+
+  // Extract the path from the URL
+  // URL format: https://xxx.supabase.co/storage/v1/object/public/images/posts/filename.jpg
+  const match = url.match(/\/images\/(.+)$/)
+  if (!match) {
+    return { error: 'Invalid image URL' }
+  }
+
+  const path = match[1]
+
+  const { error } = await supabase.storage
+    .from('images')
+    .remove([path])
+
+  if (error) {
+    console.error('Delete error:', error)
+    return { error: `Delete failed: ${error.message}` }
+  }
+
+  return { success: true }
 }

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { PostEditor, type PostEditorData } from '@/components/admin/post-editor'
 import type { Locale, AuthorLocalized, CategoryLocalized } from '@/lib/supabase/types'
-import { createPostAction } from '../actions'
+import { createPostAction, uploadImageAction } from '../actions'
 
 const translations: Record<Locale, {
   postDetails: string
@@ -21,6 +21,10 @@ const translations: Record<Locale, {
   saveDraft: string
   publish: string
   all: string
+  featuredImage: string
+  uploadImage: string
+  removeImage: string
+  imagePlaceholder: string
   languages: Record<Locale, string>
 }> = {
   en: {
@@ -37,6 +41,10 @@ const translations: Record<Locale, {
     saveDraft: 'Save Draft',
     publish: 'Publish',
     all: 'Select...',
+    featuredImage: 'Featured Image',
+    uploadImage: 'Upload Image',
+    removeImage: 'Remove',
+    imagePlaceholder: 'Drag & drop an image or click to browse',
     languages: {
       en: 'English',
       fr: 'French',
@@ -58,6 +66,10 @@ const translations: Record<Locale, {
     saveDraft: 'Enregistrer le brouillon',
     publish: 'Publier',
     all: 'Sélectionner...',
+    featuredImage: 'Image à la une',
+    uploadImage: 'Télécharger',
+    removeImage: 'Supprimer',
+    imagePlaceholder: 'Glissez-déposez une image ou cliquez pour parcourir',
     languages: {
       en: 'Anglais',
       fr: 'Français',
@@ -79,6 +91,10 @@ const translations: Record<Locale, {
     saveDraft: 'حفظ كمسودة',
     publish: 'نشر',
     all: 'اختر...',
+    featuredImage: 'الصورة البارزة',
+    uploadImage: 'رفع صورة',
+    removeImage: 'حذف',
+    imagePlaceholder: 'اسحب وأفلت صورة أو انقر للتصفح',
     languages: {
       en: 'الإنجليزية',
       fr: 'الفرنسية',
@@ -100,6 +116,10 @@ const translations: Record<Locale, {
     saveDraft: 'مسودہ محفوظ کریں',
     publish: 'شائع کریں',
     all: 'منتخب کریں...',
+    featuredImage: 'نمایاں تصویر',
+    uploadImage: 'تصویر اپ لوڈ کریں',
+    removeImage: 'حذف کریں',
+    imagePlaceholder: 'تصویر گھسیٹ کر چھوڑیں یا براؤز کرنے کے لیے کلک کریں',
     languages: {
       en: 'انگریزی',
       fr: 'فرانسیسی',
@@ -115,6 +135,7 @@ const emptyPostData: PostEditorData = {
   authorId: '',
   isPublished: false,
   isFeatured: false,
+  featuredImage: null,
   titles: { en: '', fr: '', ar: '', ur: '' },
   excerpts: { en: '', fr: '', ar: '', ur: '' },
   contents: { en: '', fr: '', ar: '', ur: '' },
@@ -144,6 +165,24 @@ export function NewPostContent({
     router.push(`/${locale}/admin/posts`)
   }
 
+  const handleUploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const result = await uploadImageAction(formData)
+
+    if ('error' in result && result.error) {
+      toast.error(result.error)
+      throw new Error(result.error)
+    }
+
+    if ('url' in result) {
+      return result.url
+    }
+
+    throw new Error('Upload failed')
+  }
+
   const handleSave = async (publish: boolean) => {
     if (!data.slug || !data.titles.en) {
       // Basic validation - at least need a slug and English title
@@ -167,6 +206,7 @@ export function NewPostContent({
         slug: data.slug,
         author_id: data.authorId || undefined,
         category_id: data.categoryId || undefined,
+        featured_image: data.featuredImage || undefined,
         is_published: publish,
         is_featured: data.isFeatured,
         translations: translationsToCreate,
@@ -198,6 +238,7 @@ export function NewPostContent({
         translations={t}
         isEditing={false}
         onChange={setData}
+        onUploadImage={handleUploadImage}
         onCancel={handleCancel}
         onSaveDraft={() => handleSave(false)}
         onPublish={() => handleSave(true)}
