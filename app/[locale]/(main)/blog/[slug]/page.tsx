@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getPostBySlug, getRelatedPosts } from '@/lib/supabase/api'
+import { getPostBySlug, getRelatedPosts, incrementPostViews } from '@/lib/supabase/api'
 import type { Locale } from '@/lib/supabase/types'
 import { PostPageClient } from './post-client'
 import { MDXRemote } from 'next-mdx-remote/rsc'
@@ -57,6 +57,11 @@ export default async function PostPage({ params }: Props) {
   if (!post) {
     notFound()
   }
+
+  // Increment view count (fire and forget - don't await to avoid blocking page render)
+  incrementPostViews(post.id).catch(() => {
+    // Silently ignore errors - view tracking is not critical
+  })
 
   const relatedPosts = await getRelatedPosts(slug, post.category_id || '', locale, 3)
 

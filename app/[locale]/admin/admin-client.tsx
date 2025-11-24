@@ -13,10 +13,12 @@ import {
   EmptyState,
 } from 'noorui-rtl'
 import { FileText, Eye, TrendingUp, Plus, Settings, BookOpen } from 'lucide-react'
+import { toast } from 'sonner'
 import type { Locale, PostWithRelations, AuthorLocalized, CategoryLocalized } from '@/lib/supabase/types'
 import type { AdminStats } from '@/lib/supabase/admin-api'
 import { adminTranslations } from '@/lib/i18n/admin'
 import { StatsCard, PostsTable, PostFilters, PostEditor, type PostEditorData } from '@/components/admin'
+import { uploadImageAction } from './posts/actions'
 
 interface AdminClientProps {
   locale: Locale
@@ -32,6 +34,7 @@ const emptyEditorData: PostEditorData = {
   authorId: '',
   isPublished: false,
   isFeatured: false,
+  featuredImage: null,
   titles: { en: '', fr: '', ar: '', ur: '' },
   excerpts: { en: '', fr: '', ar: '', ur: '' },
   contents: { en: '', fr: '', ar: '', ur: '' },
@@ -93,6 +96,7 @@ export function AdminClient({
       authorId: post.author_id || '',
       isPublished: post.is_published,
       isFeatured: post.is_featured,
+      featuredImage: post.featured_image,
       titles: { en: post.title, fr: '', ar: '', ur: '' },
       excerpts: { en: post.excerpt || '', fr: '', ar: '', ur: '' },
       contents: { en: post.content || '', fr: '', ar: '', ur: '' },
@@ -110,6 +114,24 @@ export function AdminClient({
     setSelectedPost(null)
     setEditorData(emptyEditorData)
     window.location.hash = '#posts'
+  }
+
+  const handleUploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const result = await uploadImageAction(formData)
+
+    if ('error' in result && result.error) {
+      toast.error(result.error)
+      throw new Error(result.error)
+    }
+
+    if ('url' in result) {
+      return result.url
+    }
+
+    throw new Error('Upload failed')
   }
 
   return (
@@ -247,6 +269,7 @@ export function AdminClient({
               categories={categories}
               isEditing={!!selectedPost}
               onChange={setEditorData}
+              onUploadImage={handleUploadImage}
               onCancel={handleCancelEdit}
               onSaveDraft={() => console.log('Save draft:', editorData)}
               onPublish={() => console.log('Publish:', editorData)}
@@ -264,6 +287,10 @@ export function AdminClient({
                 saveDraft: t.create.saveDraft,
                 publish: t.create.publish,
                 all: t.filters.all,
+                featuredImage: t.create.featuredImage,
+                uploadImage: t.create.uploadImage,
+                removeImage: t.create.removeImage,
+                imagePlaceholder: t.create.imagePlaceholder,
                 languages: t.languages,
               }}
             />

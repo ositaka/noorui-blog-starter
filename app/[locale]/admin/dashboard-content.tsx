@@ -146,8 +146,8 @@ export function DashboardContent({
           <h1 className="text-3xl font-bold tracking-tight">{t.dashboard}</h1>
           <p className="text-muted-foreground">{t.overview}</p>
         </div>
-        <Button>
-          <Link href={`/${locale}/admin/posts/new`}>
+        <Button asChild>
+          <Link href={`/${locale}/admin/posts/new`} className="inline-flex items-center">
             <Plus className="h-4 w-4 me-2" />
             {t.createNew}
           </Link>
