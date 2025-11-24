@@ -76,8 +76,21 @@ A plan for enriching the blog while also expanding noorui-rtl components.
 - `Vimeo` - Convenience component for Vimeo
 - `CodeBlock` - Code with copy button and filename
 - `CopyButton` - Standalone copy button
+- `WideBox` - Container that breaks out of content width for tables/wide content
 
 **Demo page:** `/en/components-demo` (development only)
+
+### 2.6 About Page ✅
+- [x] About page with MDX components showcase
+- [x] Demonstrates Callout, PullQuote, Blockquote (accent variant), WideBox
+- [x] Creator bio and social links
+- [x] Technical highlights table
+- [x] Call-to-action for noorui-rtl
+
+**Site Navigation Updates:**
+- [x] Dashboard link added to header navigation (all locales)
+- [x] Footer links updated with real URLs (GitHub, LinkedIn, noorui.com)
+- [x] Social icons: GitHub + LinkedIn (replaced Twitter)
 
 ---
 
@@ -133,6 +146,9 @@ Features needed:
 - [x] Translation management (all 4 locales)
 - [x] Server actions protected (guests cannot edit)
 - [x] Toast notifications for errors/success
+- [x] Delete post functionality with confirmation dialog
+- [x] View count tracking (increments on post view)
+- [x] Image upload keyboard accessibility (Tab + Enter/Space)
 
 ### 4.3 Dashboard
 - [x] Analytics overview (views, popular posts)
@@ -207,6 +223,14 @@ Guest Mode:                    Admin Mode:
 - `Pagination` - (already exists, may need enhancement)
 - `InfiniteScroll` - Auto-loading content
 
+### Phase 6: SEO & Performance Components
+
+**New noorui-rtl components:**
+- `NavigationProgress` - Top progress bar for page transitions (like Next.js nprogress)
+- `Skeleton` - Skeleton loader component with various shapes/sizes
+- `SkeletonText` - Text content skeleton
+- `SkeletonImage` - Image placeholder skeleton
+
 ---
 
 ## Phase 6: SEO & Performance
@@ -223,6 +247,12 @@ Guest Mode:                    Admin Mode:
 - [ ] Lazy loading
 - [ ] Static generation where possible
 - [ ] Bundle analysis
+
+### 6.3 Loading States
+- [ ] Navigation loading indicator (top progress bar or similar)
+- [ ] Skeleton loaders for blog post list
+- [ ] Skeleton loaders for post content
+- [ ] Loading states for admin dashboard
 
 ---
 
