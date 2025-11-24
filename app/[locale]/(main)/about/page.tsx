@@ -136,7 +136,7 @@ export default async function AboutPage({ params }: Props) {
 
         <p>Ready to build your own multilingual application?</p>
 
-        <Blockquote variant="subtle">
+        <Blockquote variant="accent">
           Whether you're building a blog, an e-commerce platform, or a SaaS dashboard for the GCC market — noorui-rtl gives you the foundation to ship faster without sacrificing quality for your RTL users.
         </Blockquote>
 
