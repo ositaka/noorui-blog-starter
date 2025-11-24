@@ -1,9 +1,30 @@
 'use client'
 
 import { MDXRemote, type MDXRemoteSerializeResult } from 'next-mdx-remote'
+import { Blockquote, PullQuote } from './blockquote'
+import { Callout, InfoCallout, WarningCallout, ErrorCallout, SuccessCallout } from './callout'
+import { Figure, ImageGrid } from './figure'
+import { MediaEmbed, YouTube, Vimeo } from './media-embed'
+import { CodeBlock, CopyButton } from './code-block'
 
 // Define components inline to avoid import issues
 const mdxComponents = {
+  // Custom components
+  Blockquote,
+  PullQuote,
+  Callout,
+  InfoCallout,
+  WarningCallout,
+  ErrorCallout,
+  SuccessCallout,
+  Figure,
+  ImageGrid,
+  MediaEmbed,
+  YouTube,
+  Vimeo,
+  CodeBlock,
+  CopyButton,
+
   // Headings
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => <h1 className="text-4xl font-bold mt-12 mb-4 scroll-mt-24" {...props} />,
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => <h2 className="text-3xl font-bold mt-10 mb-4 scroll-mt-24" {...props} />,

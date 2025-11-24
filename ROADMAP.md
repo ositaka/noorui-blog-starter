@@ -31,43 +31,53 @@ A plan for enriching the blog while also expanding noorui-rtl components.
 
 ## Phase 2: Rich Content Components
 
-### 2.1 Blockquote Component
-- [ ] Styled blockquote with author attribution
-- [ ] Support for pull quotes
-- [ ] RTL text direction support
-- [ ] Multiple variants (default, highlight, warning)
+### 2.1 Blockquote Component ✅
+- [x] Styled blockquote with author attribution
+- [x] Support for pull quotes
+- [x] RTL text direction support (uses CSS logical properties)
+- [x] Multiple variants (default, accent, subtle)
 
-### 2.2 Video/Audio Component
-- [ ] Video player with custom controls
-- [ ] Audio player with waveform visualization
-- [ ] Support for YouTube, Vimeo embeds
-- [ ] Podcast-style audio player
-- [ ] RTL controls layout
+### 2.2 Callout Component ✅
+- [x] Info, warning, error, success, note types
+- [x] Optional title
+- [x] Custom icons support
+- [x] RTL-aware layout
 
-### 2.3 Gallery Component
-- [ ] Image gallery with lightbox
-- [ ] Carousel/slider mode
-- [ ] Grid layout options
-- [ ] RTL swipe direction
-- [ ] Captions support
+### 2.3 Video/Media Component ✅
+- [x] Support for YouTube, Vimeo embeds
+- [x] Privacy-focused embeds (youtube-nocookie.com, dnt=1)
+- [x] Responsive aspect ratios
+- [ ] Video player with custom controls (future)
+- [ ] Audio player with waveform visualization (future)
 
-### 2.4 Code Block Component
-- [ ] Syntax highlighting
-- [ ] Copy button
-- [ ] Line numbers
-- [ ] Line highlighting
-- [ ] File name header
-- [ ] RTL-aware for Arabic code comments
+### 2.4 Figure/Gallery Component ✅
+- [x] Figure with caption
+- [x] Image grid layout
+- [x] Size variants (default, wide, full)
+- [ ] Image gallery with lightbox (future)
+- [ ] Carousel/slider mode (future)
 
-**New noorui-rtl components:**
+### 2.5 Code Block Component ✅
+- [x] Syntax highlighting (via rehype-pretty-code)
+- [x] Copy button
+- [x] File name header
+- [x] Line numbers (via Shiki)
+- [x] Line highlighting (via Shiki)
+- [x] RTL-aware for Arabic code comments
+
+**Components added to Kitab (components/mdx/):**
 - `Blockquote` - Styled quote with attribution
 - `PullQuote` - Highlighted pull quote
-- `VideoPlayer` - Custom video player
-- `AudioPlayer` - Podcast-style audio player
+- `Callout` - Info/warning/error/success boxes
+- `Figure` - Image with caption
+- `ImageGrid` - Grid layout for images
 - `MediaEmbed` - YouTube/Vimeo embed wrapper
-- `ImageGallery` - Grid gallery with lightbox
-- `Carousel` - Image/content carousel
-- `CodeBlock` - Enhanced code display
+- `YouTube` - Convenience component for YouTube
+- `Vimeo` - Convenience component for Vimeo
+- `CodeBlock` - Code with copy button and filename
+- `CopyButton` - Standalone copy button
+
+**Demo page:** `/en/components-demo` (development only)
 
 ---
 
@@ -270,39 +280,41 @@ To continue development, start a fresh Claude Code session and reference this ro
 
 ---
 
-## Phase 7: Component Migration to noorui-rtl
+## Phase 7: Component Development in noorui-rtl
 
 ### Development Workflow
 
+**Primary workflow**: Build components directly in noorui-rtl, then use in Kitab.
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  1. PROTOTYPE IN KITAB                                          │
-│     Build component in /components/ui/                          │
-│     Test with real blog content (all 4 locales)                 │
+│  1. BUILD IN NOORUI-RTL                                         │
+│     Create component in noorui-rtl/components/                  │
+│     Add TypeScript types, RTL support, variants                 │
+│     Write Storybook stories and tests                           │
+│     Export from index.ts                                        │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  2. CREATE COMPONENT SPEC                                       │
-│     Generate /docs/components/<component-name>.md               │
-│     Include: Props, Variants, RTL behavior, Examples            │
+│  2. PUBLISH NEW VERSION                                         │
+│     Bump version in package.json                                │
+│     npm publish                                                 │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  3. MIGRATE TO NOORUI-RTL (separate session)                    │
-│     Copy component to noorui-rtl repo                           │
-│     Add to exports, write tests, update docs                    │
-│     Publish new version                                         │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  4. UPDATE KITAB                                                │
+│  3. USE IN KITAB                                                │
 │     npm update noorui-rtl                                       │
-│     Replace local import with package import                    │
-│     Delete local component file                                 │
+│     Import component: import { X } from 'noorui-rtl'            │
+│     Use in MDX components or pages                              │
 └─────────────────────────────────────────────────────────────────┘
+```
+
+**Alternative workflow** (for complex components): Prototype in Kitab first, then migrate.
+
+```
+Kitab /components/  →  Test with real content  →  Migrate to noorui-rtl
 ```
 
 ### Component Spec Template
@@ -356,21 +368,23 @@ Description of each variant with visual examples.
 \`\`\`
 ```
 
-### Components to Migrate (by Phase)
+### Components to Build in noorui-rtl
 
-#### From Phase 1
-- [ ] `TableOfContents`
-- [ ] `StickyAside`
+#### Phase 2: Rich Content Components (Priority: HIGH)
 
-#### From Phase 2
-- [ ] `Blockquote`
-- [ ] `PullQuote`
-- [ ] `VideoPlayer`
-- [ ] `AudioPlayer`
-- [ ] `MediaEmbed`
-- [ ] `ImageGallery`
-- [ ] `Carousel`
-- [ ] `CodeBlock`
+| Component | Description | Props | Status |
+|-----------|-------------|-------|--------|
+| `Blockquote` | Styled quote with optional author/source | `variant`, `author`, `source`, `cite` | TODO |
+| `PullQuote` | Large highlighted quote for emphasis | `align` (left/center/right) | TODO |
+| `Callout` | Info/warning/error/success boxes | `type`, `title`, `icon` | TODO |
+| `CodeBlock` | Enhanced code with copy, filename, line numbers | `language`, `filename`, `showLineNumbers`, `highlightLines` | TODO |
+| `MediaEmbed` | YouTube/Vimeo/Twitter embeds | `url`, `aspectRatio` | TODO |
+| `ImageGallery` | Grid of images with lightbox | `images`, `columns`, `gap` | TODO |
+| `Figure` | Image with caption | `src`, `alt`, `caption` | TODO |
+
+#### Phase 1: Reading Experience
+- [ ] `TableOfContents` - Already in Kitab, needs migration
+- [ ] `StickyAside` - Sidebar container with sticky behavior
 
 #### From Phase 3
 - [ ] `CommentSection`
@@ -408,6 +422,10 @@ Description of each variant with visual examples.
 
 #### Added in Kitab v0.1.x
 - [x] **Localized date formatting** - Dates now display in Arabic format (e.g., "٢٢ نوفمبر ٢٠٢٥") when in Arabic locale. Uses `Intl.DateTimeFormat` with locale-aware month names and numerals. Created `formatDate` utility in `lib/utils.ts`.
+- [x] **Admin auth with Guest mode** - Google OAuth + Email magic link + Guest mode for demos. Protected server actions, toast notifications, settings page.
+
+#### Bug Fixes Needed in Kitab
+- [ ] **Translation copy preview not parsing markdown** - When copying content between locales in the TranslationEditor, the preview panel shows raw markdown instead of rendered content. Need to parse/render markdown in the preview.
 
 #### From Phase 5
 - [ ] `SearchModal`
