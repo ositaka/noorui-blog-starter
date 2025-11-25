@@ -20,17 +20,20 @@ import { Copy, Check, Globe, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Locale } from '@/lib/supabase/types'
 import { ContentEditor, type ContentFormat } from './content-editor'
+import { SEOSection, type SEOData } from './seo-section'
 
 export interface TranslationData {
   title: string
   excerpt: string
   content: string
   contentFormat: ContentFormat
+  seoData?: SEOData
 }
 
 export interface TranslationEditorProps {
   translations: Record<Locale, TranslationData>
-  onChange: (locale: Locale, field: keyof TranslationData, value: string | ContentFormat) => void
+  onChange: (locale: Locale, field: keyof TranslationData, value: string | ContentFormat | SEOData) => void
+  featuredImage?: string | null
   translations_ui: {
     title: string
     excerpt: string
@@ -60,6 +63,7 @@ const RTL_LOCALES: Locale[] = ['ar', 'ur']
 export function TranslationEditor({
   translations,
   onChange,
+  featuredImage,
   translations_ui: t,
 }: TranslationEditorProps) {
   const [activeLocale, setActiveLocale] = React.useState<Locale>('en')
@@ -87,6 +91,7 @@ export function TranslationEditor({
     onChange(locale, 'contentFormat', format)
   }
 
+
   return (
     <div className="space-y-4">
       {/* Locale tabs with status badges */}
@@ -111,7 +116,7 @@ export function TranslationEditor({
         </TabsList>
 
         {LOCALES.map((locale) => (
-          <TabsContent key={locale} value={locale} className="mt-6">
+          <TabsContent key={locale} value={locale} className="mt-6" dir={isRTL(locale) ? 'rtl' : 'ltr'}>
             <div className="grid gap-6 lg:grid-cols-2">
               {/* Source reference panel */}
               <Card className="border-dashed">
@@ -147,10 +152,7 @@ export function TranslationEditor({
                           />
                         </div>
                         <p
-                          className={cn(
-                            'text-sm p-2 rounded bg-muted/50 min-h-[40px]',
-                            isRTL(sourceLocale) && 'text-right'
-                          )}
+                          className="text-sm p-2 rounded bg-muted/50 min-h-[40px]"
                           dir={isRTL(sourceLocale) ? 'rtl' : 'ltr'}
                         >
                           {translations[sourceLocale].title || '-'}
@@ -165,10 +167,7 @@ export function TranslationEditor({
                           />
                         </div>
                         <p
-                          className={cn(
-                            'text-sm p-2 rounded bg-muted/50 min-h-[60px]',
-                            isRTL(sourceLocale) && 'text-right'
-                          )}
+                          className="text-sm p-2 rounded bg-muted/50 min-h-[60px]"
                           dir={isRTL(sourceLocale) ? 'rtl' : 'ltr'}
                         >
                           {translations[sourceLocale].excerpt || '-'}
@@ -183,10 +182,7 @@ export function TranslationEditor({
                           />
                         </div>
                         <div
-                          className={cn(
-                            'text-sm p-2 rounded bg-muted/50 min-h-[200px] max-h-[300px] overflow-auto prose prose-sm dark:prose-invert',
-                            isRTL(sourceLocale) && 'text-right'
-                          )}
+                          className="text-sm p-2 rounded bg-muted/50 min-h-[200px] max-h-[300px] overflow-auto prose prose-sm dark:prose-invert"
                           dir={isRTL(sourceLocale) ? 'rtl' : 'ltr'}
                           dangerouslySetInnerHTML={{
                             __html: translations[sourceLocale].content || '-',
@@ -250,6 +246,18 @@ export function TranslationEditor({
                       onChange={(content, format) => handleContentChange(locale, content, format)}
                       dir={isRTL(locale) ? 'rtl' : 'ltr'}
                       placeholder={isRTL(locale) ? 'اكتب محتوى المنشور...' : 'Write your content...'}
+                    />
+                  </div>
+
+                  {/* SEO Section */}
+                  <div className="mt-6 pt-6 border-t">
+                    <SEOSection
+                      data={translations[locale].seoData || {}}
+                      onChange={(seoData) => onChange(locale, 'seoData', seoData)}
+                      postTitle={translations[locale].title}
+                      postExcerpt={translations[locale].excerpt}
+                      featuredImage={featuredImage || undefined}
+                      dir={isRTL(locale) ? 'rtl' : 'ltr'}
                     />
                   </div>
                 </CardContent>

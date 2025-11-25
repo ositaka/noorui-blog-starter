@@ -18,6 +18,7 @@ import {
 import type { Locale, AuthorLocalized, CategoryLocalized } from '@/lib/supabase/types'
 import { TranslationEditor, type TranslationData } from './translation-editor'
 import { ImageUpload } from './image-upload'
+import { SEOSection, type SEOData } from './seo-section'
 import type { ContentFormat } from './content-editor'
 
 export interface PostEditorData {
@@ -30,6 +31,7 @@ export interface PostEditorData {
   titles: Record<Locale, string>
   excerpts: Record<Locale, string>
   contents: Record<Locale, string>
+  seoData: Record<Locale, SEOData>
 }
 
 export interface PostEditorProps {
@@ -97,15 +99,23 @@ export function PostEditor({
   })
 
   const translationsData: Record<Locale, TranslationData> = {
-    en: { title: data.titles.en, excerpt: data.excerpts.en, content: data.contents.en, contentFormat: translationFormats.en },
-    fr: { title: data.titles.fr, excerpt: data.excerpts.fr, content: data.contents.fr, contentFormat: translationFormats.fr },
-    ar: { title: data.titles.ar, excerpt: data.excerpts.ar, content: data.contents.ar, contentFormat: translationFormats.ar },
-    ur: { title: data.titles.ur, excerpt: data.excerpts.ur, content: data.contents.ur, contentFormat: translationFormats.ur },
+    en: { title: data.titles.en, excerpt: data.excerpts.en, content: data.contents.en, contentFormat: translationFormats.en, seoData: data.seoData.en },
+    fr: { title: data.titles.fr, excerpt: data.excerpts.fr, content: data.contents.fr, contentFormat: translationFormats.fr, seoData: data.seoData.fr },
+    ar: { title: data.titles.ar, excerpt: data.excerpts.ar, content: data.contents.ar, contentFormat: translationFormats.ar, seoData: data.seoData.ar },
+    ur: { title: data.titles.ur, excerpt: data.excerpts.ur, content: data.contents.ur, contentFormat: translationFormats.ur, seoData: data.seoData.ur },
   }
 
-  const handleTranslationChange = (locale: Locale, field: keyof TranslationData, value: string | ContentFormat) => {
+  const handleTranslationChange = (locale: Locale, field: keyof TranslationData, value: string | ContentFormat | SEOData) => {
     if (field === 'contentFormat') {
       setTranslationFormats(prev => ({ ...prev, [locale]: value as ContentFormat }))
+      return
+    }
+
+    if (field === 'seoData') {
+      onChange({
+        ...data,
+        seoData: { ...data.seoData, [locale]: value as SEOData },
+      })
       return
     }
 
@@ -228,10 +238,11 @@ export function PostEditor({
         </CardContent>
       </Card>
 
-      {/* Translations with side-by-side editor */}
+      {/* Translations with side-by-side editor (includes SEO fields) */}
       <TranslationEditor
         translations={translationsData}
         onChange={handleTranslationChange}
+        featuredImage={data.featuredImage}
         translations_ui={{
           title: t.title,
           excerpt: t.excerpt,

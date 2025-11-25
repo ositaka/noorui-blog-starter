@@ -132,7 +132,16 @@ const translations: Record<Locale, {
 interface EditPostContentProps {
   locale: Locale
   post: Post
-  translations: Record<Locale, { title: string; excerpt: string | null; content: string | null }>
+  translations: Record<Locale, {
+    title: string
+    excerpt: string | null
+    content: string | null
+    meta_title?: string | null
+    meta_description?: string | null
+    og_image?: string | null
+    focus_keyword?: string | null
+    twitter_card?: string | null
+  }>
   authors: AuthorLocalized[]
   categories: CategoryLocalized[]
 }
@@ -149,6 +158,11 @@ export function EditPostContent({
 }: EditPostContentProps) {
   const router = useRouter()
   const t = translations[locale]
+
+  // Helper to check if a value is empty (null, undefined, or empty string)
+  const isEmpty = (value: string | null | undefined): boolean => {
+    return !value || value.trim() === ''
+  }
 
   // Initialize data from the existing post and translations
   const [data, setData] = React.useState<PostEditorData>(() => ({
@@ -175,6 +189,36 @@ export function EditPostContent({
       fr: existingTranslations.fr?.content || '',
       ar: existingTranslations.ar?.content || '',
       ur: existingTranslations.ur?.content || '',
+    },
+    seoData: {
+      en: {
+        meta_title: isEmpty(existingTranslations.en?.meta_title) ? existingTranslations.en?.title : existingTranslations.en?.meta_title,
+        meta_description: isEmpty(existingTranslations.en?.meta_description) ? existingTranslations.en?.excerpt : existingTranslations.en?.meta_description,
+        og_image: existingTranslations.en?.og_image || undefined,
+        focus_keyword: existingTranslations.en?.focus_keyword || undefined,
+        twitter_card: existingTranslations.en?.twitter_card || undefined,
+      },
+      fr: {
+        meta_title: isEmpty(existingTranslations.fr?.meta_title) ? existingTranslations.fr?.title : existingTranslations.fr?.meta_title,
+        meta_description: isEmpty(existingTranslations.fr?.meta_description) ? existingTranslations.fr?.excerpt : existingTranslations.fr?.meta_description,
+        og_image: existingTranslations.fr?.og_image || undefined,
+        focus_keyword: existingTranslations.fr?.focus_keyword || undefined,
+        twitter_card: existingTranslations.fr?.twitter_card || undefined,
+      },
+      ar: {
+        meta_title: isEmpty(existingTranslations.ar?.meta_title) ? existingTranslations.ar?.title : existingTranslations.ar?.meta_title,
+        meta_description: isEmpty(existingTranslations.ar?.meta_description) ? existingTranslations.ar?.excerpt : existingTranslations.ar?.meta_description,
+        og_image: existingTranslations.ar?.og_image || undefined,
+        focus_keyword: existingTranslations.ar?.focus_keyword || undefined,
+        twitter_card: existingTranslations.ar?.twitter_card || undefined,
+      },
+      ur: {
+        meta_title: isEmpty(existingTranslations.ur?.meta_title) ? existingTranslations.ur?.title : existingTranslations.ur?.meta_title,
+        meta_description: isEmpty(existingTranslations.ur?.meta_description) ? existingTranslations.ur?.excerpt : existingTranslations.ur?.meta_description,
+        og_image: existingTranslations.ur?.og_image || undefined,
+        focus_keyword: existingTranslations.ur?.focus_keyword || undefined,
+        twitter_card: existingTranslations.ur?.twitter_card || undefined,
+      },
     },
   }))
 
@@ -235,13 +279,25 @@ export function EditPostContent({
       const locales: Locale[] = ['en', 'fr', 'ar', 'ur']
       const translationPromises = locales
         .filter((loc) => data.titles[loc]) // Only update locales with titles
-        .map((loc) =>
-          upsertTranslationAction(post.id, loc, {
+        .map((loc) => {
+          const metaTitle = data.seoData[loc]?.meta_title
+          const metaDesc = data.seoData[loc]?.meta_description
+          const ogImage = data.seoData[loc]?.og_image
+          const focusKeyword = data.seoData[loc]?.focus_keyword
+          const twitterCard = data.seoData[loc]?.twitter_card
+
+          return upsertTranslationAction(post.id, loc, {
             title: data.titles[loc],
             excerpt: data.excerpts[loc] || undefined,
             content: data.contents[loc] || undefined,
+            // Send empty string to clear, or the value if present
+            meta_title: isEmpty(metaTitle) ? '' : metaTitle,
+            meta_description: isEmpty(metaDesc) ? '' : metaDesc,
+            og_image: isEmpty(ogImage) ? '' : ogImage,
+            focus_keyword: isEmpty(focusKeyword) ? '' : focusKeyword,
+            twitter_card: twitterCard || 'summary_large_image',
           })
-        )
+        })
 
       const translationResults = await Promise.all(translationPromises)
 

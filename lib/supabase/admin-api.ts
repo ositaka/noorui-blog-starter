@@ -43,6 +43,9 @@ export interface CreatePostData {
     content?: string
     meta_title?: string
     meta_description?: string
+    og_image?: string
+    focus_keyword?: string
+    twitter_card?: string
   }[]
 }
 
@@ -64,6 +67,9 @@ export interface UpdateTranslationData {
   content?: string
   meta_title?: string
   meta_description?: string
+  og_image?: string
+  focus_keyword?: string
+  twitter_card?: string
 }
 
 export interface AdminStats {
@@ -137,7 +143,16 @@ export async function getAdminPosts(locale: Locale = 'en'): Promise<PostWithRela
  */
 export async function getPostWithTranslations(postId: string): Promise<{
   post: Post | null
-  translations: Record<Locale, { title: string; excerpt: string | null; content: string | null }>
+  translations: Record<Locale, {
+    title: string
+    excerpt: string | null
+    content: string | null
+    meta_title?: string | null
+    meta_description?: string | null
+    og_image?: string | null
+    focus_keyword?: string | null
+    twitter_card?: string | null
+  }>
 }> {
   const supabase = await createClient()
 
@@ -151,7 +166,16 @@ export async function getPostWithTranslations(postId: string): Promise<{
     console.error('Error fetching post:', postResult.error)
     return {
       post: null,
-      translations: {} as Record<Locale, { title: string; excerpt: string | null; content: string | null }>,
+      translations: {} as Record<Locale, {
+        title: string
+        excerpt: string | null
+        content: string | null
+        meta_title?: string | null
+        meta_description?: string | null
+        og_image?: string | null
+        focus_keyword?: string | null
+        twitter_card?: string | null
+      }>,
     }
   }
 
@@ -160,14 +184,38 @@ export async function getPostWithTranslations(postId: string): Promise<{
   }
 
   // Build translations map
-  const translations = {} as Record<Locale, { title: string; excerpt: string | null; content: string | null }>
+  const translations = {} as Record<Locale, {
+    title: string
+    excerpt: string | null
+    content: string | null
+    meta_title?: string | null
+    meta_description?: string | null
+    og_image?: string | null
+    focus_keyword?: string | null
+    twitter_card?: string | null
+  }>
 
-  type TranslationRow = { locale: Locale; title: string; excerpt: string | null; content: string | null }
+  type TranslationRow = {
+    locale: Locale
+    title: string
+    excerpt: string | null
+    content: string | null
+    meta_title?: string | null
+    meta_description?: string | null
+    og_image?: string | null
+    focus_keyword?: string | null
+    twitter_card?: string | null
+  }
   for (const t of (translationsResult.data ?? []) as TranslationRow[]) {
     translations[t.locale] = {
       title: t.title,
       excerpt: t.excerpt,
       content: t.content,
+      meta_title: t.meta_title,
+      meta_description: t.meta_description,
+      og_image: t.og_image,
+      focus_keyword: t.focus_keyword,
+      twitter_card: t.twitter_card,
     }
   }
 
@@ -228,6 +276,9 @@ export async function createPost(
     content: t.content,
     meta_title: t.meta_title,
     meta_description: t.meta_description,
+    og_image: t.og_image,
+    focus_keyword: t.focus_keyword,
+    twitter_card: t.twitter_card,
   }))
 
   const { error: transError } = await supabase
@@ -322,6 +373,9 @@ export async function upsertTranslation(
       content: data.content,
       meta_title: data.meta_title,
       meta_description: data.meta_description,
+      og_image: data.og_image,
+      focus_keyword: data.focus_keyword,
+      twitter_card: data.twitter_card,
     }
 
     const { error } = await supabase

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { getPostBySlug, getRelatedPosts, incrementPostViews } from '@/lib/supabase/api'
 import type { Locale } from '@/lib/supabase/types'
 import { PostPageClient } from './post-client'
+import type { Metadata } from 'next'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 import rehypePrettyCode from 'rehype-pretty-code'
@@ -71,6 +72,91 @@ interface Props {
   params: Promise<{ locale: string; slug: string }>
 }
 
+// Generate metadata for SEO and Open Graph
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale: localeParam, slug } = await params
+  const locale = localeParam as Locale
+
+  const post = await getPostBySlug(slug, locale)
+
+  if (!post) {
+    return {
+      title: 'Post Not Found',
+    }
+  }
+
+  const authorName = post.author?.name || 'Kitab'
+  const categoryName = post.category?.name || 'Blog'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const postUrl = `${baseUrl}/${locale}/blog/${slug}`
+
+  // Build keywords from tags
+  const keywords = post.tags || []
+
+  // SEO fallback logic: use custom SEO fields if available, otherwise fallback to post data
+  const metaTitle = post.meta_title || post.title
+  const metaDescription = post.meta_description || post.excerpt || `Read ${post.title} on Kitab - A multilingual blog about RTL languages and typography.`
+  const ogImage = post.og_image || post.featured_image
+  const twitterCard = (post.twitter_card as 'summary' | 'summary_large_image' | 'app' | 'player') || 'summary_large_image'
+
+  return {
+    title: metaTitle,
+    description: metaDescription,
+    authors: [{ name: authorName }],
+    keywords: [...keywords, 'RTL', 'Arabic', 'Urdu', 'typography', 'web development', categoryName],
+    category: categoryName,
+    alternates: {
+      canonical: postUrl,
+      languages: {
+        'x-default': `${baseUrl}/en/blog/${slug}`, // Default language for unknown locales
+        'en': `${baseUrl}/en/blog/${slug}`,
+        'ar': `${baseUrl}/ar/blog/${slug}`,
+        'fr': `${baseUrl}/fr/blog/${slug}`,
+        'ur': `${baseUrl}/ur/blog/${slug}`,
+      },
+    },
+    openGraph: {
+      title: metaTitle,
+      description: metaDescription,
+      url: postUrl,
+      siteName: 'Kitab',
+      locale: locale === 'ar' ? 'ar_SA' : locale === 'ur' ? 'ur_PK' : locale === 'fr' ? 'fr_FR' : 'en_US',
+      type: 'article',
+      publishedTime: post.published_at || undefined,
+      modifiedTime: post.updated_at || undefined,
+      authors: [authorName],
+      tags: keywords,
+      images: ogImage ? [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: metaTitle,
+        }
+      ] : [],
+    },
+    twitter: {
+      card: twitterCard,
+      title: metaTitle,
+      description: metaDescription,
+      images: ogImage ? [ogImage] : [],
+      creator: '@kitabblog',
+      site: '@kitabblog',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+  }
+}
+
 export default async function PostPage({ params }: Props) {
   const { locale: localeParam, slug } = await params
   const locale = localeParam as Locale
@@ -87,6 +173,41 @@ export default async function PostPage({ params }: Props) {
   })
 
   const relatedPosts = await getRelatedPosts(slug, post.category_id || '', locale, 3)
+
+  // JSON-LD structured data for SEO
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const authorName = post.author?.name || 'Kitab'
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt || '',
+    image: post.featured_image || `${baseUrl}/og-default.jpg`,
+    datePublished: post.published_at || post.created_at,
+    dateModified: post.updated_at || post.created_at,
+    author: {
+      '@type': 'Person',
+      name: authorName,
+      url: `${baseUrl}/${locale}/about`,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Kitab',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${baseUrl}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${baseUrl}/${locale}/blog/${slug}`,
+    },
+    keywords: (post.tags || []).join(', '),
+    articleSection: post.category?.name || 'Blog',
+    inLanguage: locale === 'ar' ? 'ar-SA' : locale === 'ur' ? 'ur-PK' : locale === 'fr' ? 'fr-FR' : 'en-US',
+    wordCount: post.content ? post.content.split(/\s+/).length : 0,
+    timeRequired: `PT${post.reading_time || 5}M`,
+  }
 
   // Render MDX content as a React Server Component
   const mdxContent = post.content ? (
@@ -106,11 +227,18 @@ export default async function PostPage({ params }: Props) {
   ) : null
 
   return (
-    <PostPageClient
-      locale={locale}
-      post={post}
-      relatedPosts={relatedPosts}
-      mdxContent={mdxContent}
-    />
+    <>
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PostPageClient
+        locale={locale}
+        post={post}
+        relatedPosts={relatedPosts}
+        mdxContent={mdxContent}
+      />
+    </>
   )
 }

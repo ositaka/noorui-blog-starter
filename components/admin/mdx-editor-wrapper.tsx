@@ -30,12 +30,14 @@ interface MDXEditorWrapperProps {
   markdown: string
   onChange: (markdown: string) => void
   placeholder?: string
+  dir?: 'ltr' | 'rtl'
 }
 
 export default function MDXEditorWrapper({
   markdown,
   onChange,
   placeholder,
+  dir = 'ltr',
 }: MDXEditorWrapperProps) {
   const editorRef = useRef<MDXEditorMethods>(null)
 
@@ -50,7 +52,7 @@ export default function MDXEditorWrapper({
   }, [markdown])
 
   return (
-    <div className="mdx-editor-container">
+    <div className="mdx-editor-container" dir={dir}>
       <MDXEditor
         ref={editorRef}
         markdown={markdown}

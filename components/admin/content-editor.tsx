@@ -172,6 +172,7 @@ export function ContentEditor({
             markdown={content}
             onChange={handleEditorChange}
             placeholder={placeholder || (isRTL ? 'ابدأ الكتابة...' : 'Start writing...')}
+            dir={dir}
           />
         )}
 

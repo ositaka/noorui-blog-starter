@@ -139,6 +139,12 @@ const emptyPostData: PostEditorData = {
   titles: { en: '', fr: '', ar: '', ur: '' },
   excerpts: { en: '', fr: '', ar: '', ur: '' },
   contents: { en: '', fr: '', ar: '', ur: '' },
+  seoData: {
+    en: {},
+    fr: {},
+    ar: {},
+    ur: {},
+  },
 }
 
 interface NewPostContentProps {
@@ -157,6 +163,11 @@ export function NewPostContent({
 }: NewPostContentProps) {
   const router = useRouter()
   const t = translations[locale]
+
+  // Helper to check if a value is empty (null, undefined, or empty string)
+  const isEmpty = (value: string | null | undefined): boolean => {
+    return !value || value.trim() === ''
+  }
 
   const [data, setData] = React.useState<PostEditorData>(emptyPostData)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
@@ -195,11 +206,31 @@ export function NewPostContent({
       // Build translations array from the editor data
       const translationsToCreate = (['en', 'fr', 'ar', 'ur'] as Locale[])
         .filter((loc) => data.titles[loc]) // Only include locales with titles
-        .map((loc) => ({
-          locale: loc,
-          title: data.titles[loc],
-          excerpt: data.excerpts[loc] || undefined,
-          content: data.contents[loc] || undefined,
+        .map((loc) => {
+          // Build translation data, excluding empty SEO fields entirely
+          const translationData: any = {
+            locale: loc,
+            title: data.titles[loc],
+          }
+
+          // Add optional fields only if they have values
+          if (data.excerpts[loc]) translationData.excerpt = data.excerpts[loc]
+          if (data.contents[loc]) translationData.content = data.contents[loc]
+
+          // Only include SEO fields if they have values
+          const metaTitle = data.seoData[loc]?.meta_title
+          const metaDesc = data.seoData[loc]?.meta_description
+          const ogImage = data.seoData[loc]?.og_image
+          const focusKeyword = data.seoData[loc]?.focus_keyword
+          const twitterCard = data.seoData[loc]?.twitter_card
+
+          if (!isEmpty(metaTitle)) translationData.meta_title = metaTitle
+          if (!isEmpty(metaDesc)) translationData.meta_description = metaDesc
+          if (!isEmpty(ogImage)) translationData.og_image = ogImage
+          if (!isEmpty(focusKeyword)) translationData.focus_keyword = focusKeyword
+          if (twitterCard) translationData.twitter_card = twitterCard
+
+          return translationData
         }))
 
       const result = await createPostAction({
