@@ -394,6 +394,7 @@ Guest Mode:                    Admin Mode:
 - [x] RSS 2.0 XML generation for all 4 locales
 - [x] RSS discovery links in HTML head
 - [x] Locale-specific feeds (/en/rss.xml, /ar/rss.xml, /fr/rss.xml, /ur/rss.xml)
+- [x] Cross-locale feed links with hreflang (alternate feeds)
 - [x] Proper XML escaping for multilingual content
 - [x] Include post metadata (author, category, tags, images)
 - [x] CDATA sections for full content
@@ -404,6 +405,7 @@ Guest Mode:                    Admin Mode:
 - ✅ Per-locale RSS feeds at `/{locale}/rss.xml`
 - ✅ RSS 2.0 specification compliant
 - ✅ Multilingual titles and descriptions
+- ✅ Cross-locale feed links with `atom:link rel="alternate"` and `hreflang`
 - ✅ Proper XML character escaping (handles Arabic, Urdu, special chars)
 - ✅ Full post content in CDATA sections
 - ✅ Author attribution with dc:creator
@@ -418,16 +420,67 @@ Guest Mode:                    Admin Mode:
   - Dynamic RSS generation per locale
   - Fetches latest 50 posts from Supabase
   - XML escaping function for security
+  - Generates cross-locale feed links (e.g., English feed links to Arabic, French, Urdu alternates)
   - Proper Content-Type and Cache-Control headers
 - Layout: `app/[locale]/layout.tsx`
   - Added RSS auto-discovery in generateMetadata()
   - Alternate link with type `application/rss+xml`
   - Multilingual feed titles
 - RSS Structure:
-  - Channel: Site info, language, lastBuildDate
+  - Channel: Site info, language, lastBuildDate, self-link, alternate feeds
   - Items: Title, link, guid, description, content, pubDate, author, categories
   - Namespaces: Atom, Content, Dublin Core
-  - Features: Enclosures for images, multiple categories per item
+  - Features: Enclosures for images, multiple categories per item, cross-locale discovery
+
+### 6.5 Production Build & Type Safety ✅ COMPLETED
+- [x] Fixed all TypeScript build errors
+- [x] Added SEO fields to type definitions
+- [x] Implemented function overloads for type-safe API
+- [x] Removed type assertions for cleaner code
+- [x] Created named types for better maintainability
+- [x] Successfully built for production deployment
+- [x] Fixed sitemap generation imports
+- [x] Fixed admin editor data initialization
+
+**Production Build Features Implemented:**
+- ✅ Function overloads in `getPosts()` for automatic type inference
+- ✅ TypeScript correctly infers return type based on `withCount` parameter
+- ✅ No more type assertions (`as`) needed in calling code
+- ✅ Named type `TwitterCardType` for SEO twitter card field
+- ✅ All type definitions updated with SEO fields
+- ✅ Clean, interview-ready code without AI-generated patterns
+
+**Type Safety Improvements:**
+- ✅ `lib/supabase/types.ts` - Updated with all SEO fields:
+  - Added to `posts_localized` view (og_image, twitter_card, focus_keyword)
+  - Added to `post_translations` table (Row, Insert, Update types)
+- ✅ `lib/supabase/api.ts` - Function overload pattern:
+  ```typescript
+  // Overload: when withCount is true, return object with posts and total
+  export async function getPosts(
+    options: GetPostsOptions & { withCount: true }
+  ): Promise<{ posts: PostWithRelations[]; total: number }>
+
+  // Overload: when withCount is false or undefined, return array
+  export async function getPosts(
+    options?: GetPostsOptions & { withCount?: false }
+  ): Promise<PostWithRelations[]>
+  ```
+- ✅ `components/admin/seo-section.tsx` - Named type export:
+  ```typescript
+  export type TwitterCardType = 'summary' | 'summary_large_image' | 'app' | 'player'
+  ```
+- ✅ All client code simplified without type assertions
+- ✅ TypeScript compiler fully satisfied with zero errors
+
+**Technical Implementation:**
+- Fixed import errors in `app/sitemap.ts` (getAllPosts → getPosts)
+- Added missing `seoData` property to admin editor empty state
+- Fixed twitter_card type casting across all admin components
+- Fixed social-share navigator.share detection for strict mode
+- Production build succeeds with webpack (TURBOPACK=false)
+- All 46 pages generated successfully
+- Sitemap warnings are expected and handled gracefully
 
 ### 6.2 Performance
 - [x] Image optimization (next/image with Supabase CDN)
