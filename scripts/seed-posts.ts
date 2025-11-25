@@ -196,7 +196,7 @@ async function seedPosts() {
       continue
     }
 
-    const files = fs.readdirSync(localeDir).filter(f => f.endsWith('.md'))
+    const files = fs.readdirSync(localeDir).filter(f => f.endsWith('.md') || f.endsWith('.mdx'))
     console.log(`\nProcessing ${locale}: ${files.length} files`)
 
     for (const file of files) {
