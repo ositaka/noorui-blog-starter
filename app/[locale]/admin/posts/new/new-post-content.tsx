@@ -231,7 +231,7 @@ export function NewPostContent({
           if (twitterCard) translationData.twitter_card = twitterCard
 
           return translationData
-        }))
+        })
 
       const result = await createPostAction({
         slug: data.slug,

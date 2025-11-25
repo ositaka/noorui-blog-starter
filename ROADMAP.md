@@ -278,11 +278,40 @@ Guest Mode:                    Admin Mode:
 - [ ] Static generation optimization
 - [ ] Bundle analysis
 
-### 6.3 Loading States
-- [ ] Navigation loading indicator (top progress bar or similar)
-- [ ] Skeleton loaders for blog post list
-- [ ] Skeleton loaders for post content
-- [ ] Loading states for admin dashboard
+### 6.3 Loading States ✅ COMPLETED
+- [x] Navigation loading indicator (NextTopLoader - top progress bar)
+- [x] Skeleton loaders for blog post list
+- [x] Skeleton loaders for post content
+- [x] Loading states for admin dashboard
+- [x] Loading states for admin posts list
+- [x] Skeleton components (SkeletonText, SkeletonImage, SkeletonCard)
+- [x] RTL/LTR support in all loading states
+- [x] Theme-aware (works in light/dark mode)
+
+**Loading States Features Implemented:**
+- ✅ NextTopLoader for navigation progress (uses CSS variable `--primary` for theme integration)
+- ✅ Skeleton components built on top of noorui-rtl's Skeleton base component
+- ✅ SkeletonText: Multi-line text placeholders with customizable widths
+- ✅ SkeletonImage: Image placeholders with aspect ratio support (16/9, 4/3, 1/1, 3/2, 2/1)
+- ✅ SkeletonCard: Blog post card skeleton matching actual card layout
+- ✅ Page-level loading states using Next.js 15 loading.tsx convention
+- ✅ All loading states marked as 'use client' for proper React component handling
+
+**Technical Implementation:**
+- Package: `nextjs-toploader` installed and integrated in `components/providers.tsx`
+- Components: Created in `components/ui/skeleton/` directory
+  - `skeleton-text.tsx` - Flexible text line placeholders
+  - `skeleton-image.tsx` - Aspect ratio-aware image placeholders
+  - `skeleton-card.tsx` - Composite blog card skeleton
+  - `index.ts` - Barrel export for easy imports
+- Loading pages:
+  - `app/[locale]/(main)/blog/loading.tsx` - Blog list skeleton
+  - `app/[locale]/(main)/blog/[slug]/loading.tsx` - Blog post skeleton
+  - `app/[locale]/admin/loading.tsx` - Admin dashboard skeleton
+  - `app/[locale]/admin/posts/loading.tsx` - Admin posts list skeleton
+- All loading components use shimmer animation from noorui-rtl Skeleton
+- Fully responsive: Mobile/desktop layouts respected
+- Accessibility: Skeleton components inherit from noorui-rtl's accessible base
 
 ---
 
