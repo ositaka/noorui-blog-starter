@@ -73,8 +73,9 @@ interface Props {
   params: Promise<{ locale: string; slug: string }>
 }
 
-// Enable ISR (Incremental Static Regeneration) - revalidate every hour
-export const revalidate = 3600 // 1 hour in seconds
+// Force static generation - all pages pre-rendered at build time
+export const dynamic = 'force-static'
+export const dynamicParams = false // Return 404 for unknown slugs instead of SSR
 
 // Generate static params for all blog posts at build time (SSG)
 export async function generateStaticParams() {

@@ -6,6 +6,9 @@ import { SiteFooter } from '@/components/site-footer'
 import { BlogCard } from '@/components/blog-card'
 import { getPostsByCategory } from '@/lib/posts'
 
+// Force static generation
+export const dynamic = 'force-static'
+
 export default function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
   const { category } = use(params)
   const categoryName = category.charAt(0).toUpperCase() + category.slice(1)

@@ -6,6 +6,9 @@ interface Props {
   params: Promise<{ locale: string }>
 }
 
+// Force static generation - pre-render at build time
+export const dynamic = 'force-static'
+
 export default async function HomePage({ params }: Props) {
   const { locale: localeParam } = await params
   const locale = localeParam as Locale
