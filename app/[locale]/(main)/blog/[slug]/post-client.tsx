@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { formatDate } from '@/lib/utils'
 import type { ReactNode } from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -28,7 +28,12 @@ import { Clock, Eye } from 'lucide-react'
 import type { Locale, PostWithRelations } from '@/lib/supabase/types'
 import { TableOfContents } from '@/components/blog/table-of-contents'
 import { ShareButtons } from '@/components/social-share-buttons'
-import { CommentSection } from '@/components/comments'
+import { SkeletonCard } from '@/components/ui/skeleton'
+
+// Lazy load CommentSection for better performance
+const CommentSection = lazy(() =>
+  import('@/components/comments').then(mod => ({ default: mod.CommentSection }))
+)
 
 interface PostPageClientProps {
   locale: Locale
@@ -195,15 +200,25 @@ export function PostPageClient({ locale, post, relatedPosts, mdxContent, current
 
           {/* Comment Section */}
           <div className="mt-12">
-            <CommentSection
-              postId={post.id}
-              postAuthorId={post.author_id || undefined}
-              locale={locale}
-              currentUser={currentUser}
-              sortBy="newest"
-              maxDepth={1}
-              enableReactions={true}
-            />
+            <Suspense
+              fallback={
+                <div className="space-y-4">
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                </div>
+              }
+            >
+              <CommentSection
+                postId={post.id}
+                postAuthorId={post.author_id || undefined}
+                locale={locale}
+                currentUser={currentUser}
+                sortBy="newest"
+                maxDepth={1}
+                enableReactions={true}
+              />
+            </Suspense>
           </div>
         </article>
 

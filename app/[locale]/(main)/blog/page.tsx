@@ -7,6 +7,9 @@ interface Props {
   searchParams: Promise<{ page?: string; category?: string }>
 }
 
+// Enable ISR (Incremental Static Regeneration) - revalidate every 15 minutes
+export const revalidate = 900 // 15 minutes in seconds
+
 const POSTS_PER_PAGE = 12
 
 export default async function BlogPage({ params, searchParams }: Props) {

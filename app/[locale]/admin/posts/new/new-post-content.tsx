@@ -3,9 +3,26 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { PostEditor, type PostEditorData } from '@/components/admin/post-editor'
+import dynamic from 'next/dynamic'
+import type { PostEditorData } from '@/components/admin/post-editor'
 import type { Locale, AuthorLocalized, CategoryLocalized } from '@/lib/supabase/types'
 import { createPostAction, uploadImageAction } from '../actions'
+
+// Dynamically import PostEditor to reduce initial bundle size
+const PostEditor = dynamic(
+  () => import('@/components/admin/post-editor').then(mod => ({ default: mod.PostEditor })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center min-h-[400px] text-muted-foreground">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+          Loading post editor...
+        </div>
+      </div>
+    )
+  }
+)
 
 const translations: Record<Locale, {
   postDetails: string

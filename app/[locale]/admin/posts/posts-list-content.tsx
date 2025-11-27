@@ -4,6 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import dynamic from 'next/dynamic'
 import {
   Button,
   Sheet,
@@ -22,9 +23,21 @@ import {
 } from 'noorui-rtl'
 import { Plus, Eye, Edit, ExternalLink, Calendar, User, Tag, Clock, Trash2 } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
-import { PostsTable } from '@/components/admin/posts-table'
 import { deletePostAction } from './actions'
 import type { Locale, PostWithRelations } from '@/lib/supabase/types'
+
+// Dynamically import PostsTable to reduce initial bundle size
+const PostsTable = dynamic(
+  () => import('@/components/admin/posts-table').then(mod => ({ default: mod.PostsTable })),
+  {
+    ssr: true,
+    loading: () => (
+      <div className="flex items-center justify-center min-h-[200px] text-muted-foreground">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+      </div>
+    )
+  }
+)
 
 const localeConfig: Record<Locale, { dir: 'ltr' | 'rtl' }> = {
   en: { dir: 'ltr' },
