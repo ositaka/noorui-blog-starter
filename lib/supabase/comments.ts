@@ -12,6 +12,8 @@ export interface Comment {
   post_id: string
   parent_id: string | null
   user_id: string | null
+  user_name: string | null
+  user_avatar: string | null
   content: string
   content_html: string | null
   is_pinned: boolean
@@ -22,15 +24,6 @@ export interface Comment {
   created_at: string
   updated_at: string
   // Relations
-  user?: {
-    id: string
-    email: string
-    user_metadata: {
-      name?: string
-      avatar_url?: string
-      full_name?: string
-    }
-  }
   reactions?: CommentReaction[]
   replies?: Comment[]
 }
@@ -126,8 +119,8 @@ export async function getComments(
     // Sort by reactions if requested
     if (sortBy === 'most-reactions') {
       commentsWithData.sort((a, b) => {
-        const aTotal = a.reaction_counts.reduce((sum, r) => sum + r.count, 0)
-        const bTotal = b.reaction_counts.reduce((sum, r) => sum + r.count, 0)
+        const aTotal = a.reaction_counts.reduce((sum: number, r: { emoji: string; count: number; hasReacted: boolean }) => sum + r.count, 0)
+        const bTotal = b.reaction_counts.reduce((sum: number, r: { emoji: string; count: number; hasReacted: boolean }) => sum + r.count, 0)
         return bTotal - aTotal
       })
     }
@@ -143,14 +136,14 @@ export async function getComments(
 }
 
 /**
- * Get replies for a comment (recursive up to depth 3)
+ * Get replies for a comment (LinkedIn-style: only one level of replies)
  */
 async function getReplies(
   parentId: string,
   currentUserId?: string,
   depth: number = 0
 ): Promise<Comment[]> {
-  if (depth >= 3) return [] // Max depth
+  if (depth >= 1) return [] // Max depth (LinkedIn-style: no replies to replies)
 
   const supabase = await createClient()
 
@@ -160,6 +153,9 @@ async function getReplies(
     .eq('parent_id', parentId)
     .eq('is_deleted', false)
     .order('created_at', { ascending: true })
+
+  console.log('[getReplies] parentId:', parentId, 'depth:', depth, 'found:', replies?.length || 0)
+  if (error) console.error('[getReplies] error:', error)
 
   if (error || !replies) return []
 
@@ -231,6 +227,10 @@ export async function createComment(data: {
       return { success: false, error: 'You must be logged in to comment' }
     }
 
+    // Get user display info from metadata
+    const userName = user.user_metadata?.name || user.user_metadata?.full_name || user.email || 'Anonymous'
+    const userAvatar = user.user_metadata?.avatar_url || null
+
     // Create comment
     const { data: comment, error } = await supabase
       .from('comments')
@@ -238,6 +238,8 @@ export async function createComment(data: {
         post_id: data.postId,
         parent_id: data.parentId || null,
         user_id: user.id,
+        user_name: userName,
+        user_avatar: userAvatar,
         content: data.content,
         content_html: data.contentHtml || null,
       })
@@ -247,13 +249,13 @@ export async function createComment(data: {
     if (error) {
       // Check if it's a depth limit error
       if (error.message.includes('Maximum comment depth')) {
-        return { success: false, error: 'Maximum reply depth (3 levels) reached' }
+        return { success: false, error: 'You cannot reply to a reply (LinkedIn-style threading)' }
       }
       throw error
     }
 
-    // Revalidate post page
-    revalidatePath(`/[locale]/blog/[slug]`)
+    // Revalidate post page - use page type to revalidate all matching dynamic routes
+    revalidatePath('/[locale]/blog/[slug]', 'page')
 
     return { success: true, comment }
   } catch (error) {
@@ -300,8 +302,8 @@ export async function updateComment(
       return { success: false, error: 'Comment not found or unauthorized' }
     }
 
-    // Revalidate post page
-    revalidatePath(`/[locale]/blog/[slug]`)
+    // Revalidate post page - use page type to revalidate all matching dynamic routes
+    revalidatePath('/[locale]/blog/[slug]', 'page')
 
     return { success: true, comment }
   } catch (error) {
@@ -312,6 +314,9 @@ export async function updateComment(
 
 /**
  * Delete a comment (soft delete)
+ * Permissions are handled by RLS policies:
+ * - Users can delete their own comments
+ * - Admins can delete any comment
  */
 export async function deleteComment(
   commentId: string
@@ -325,7 +330,8 @@ export async function deleteComment(
       return { success: false, error: 'You must be logged in to delete comments' }
     }
 
-    // Soft delete
+    // Soft delete - RLS policies will automatically check permissions
+    // (users can only delete their own, admins can delete any)
     const { error } = await supabase
       .from('comments')
       .update({
@@ -334,12 +340,12 @@ export async function deleteComment(
         content_html: '<p>[deleted]</p>',
       })
       .eq('id', commentId)
-      .eq('user_id', user.id) // Ensure user owns the comment
 
     if (error) throw error
 
-    // Revalidate post page
-    revalidatePath(`/[locale]/blog/[slug]`)
+    // Revalidate both blog post pages and admin pages
+    revalidatePath('/[locale]/blog/[slug]', 'page')
+    revalidatePath('/[locale]/admin/comments', 'page')
 
     return { success: true }
   } catch (error) {
@@ -374,8 +380,8 @@ export async function togglePinComment(
 
     if (error) throw error
 
-    // Revalidate post page
-    revalidatePath(`/[locale]/blog/[slug]`)
+    // Revalidate post page - use page type to revalidate all matching dynamic routes
+    revalidatePath('/[locale]/blog/[slug]', 'page')
 
     return { success: true }
   } catch (error) {
@@ -445,8 +451,8 @@ export async function toggleReaction(
       if (error) throw error
     }
 
-    // Revalidate post page
-    revalidatePath(`/[locale]/blog/[slug]`)
+    // Revalidate post page - use page type to revalidate all matching dynamic routes
+    revalidatePath('/[locale]/blog/[slug]', 'page')
 
     return { success: true }
   } catch (error) {
@@ -477,7 +483,7 @@ export async function getRecentComments(limit = 10): Promise<RecentComment[]> {
   const supabase = await createClient()
 
   try {
-    // Fetch recent comments with user info
+    // Fetch recent comments with stored user info
     const { data: comments, error } = await supabase
       .from('comments')
       .select(`
@@ -485,7 +491,8 @@ export async function getRecentComments(limit = 10): Promise<RecentComment[]> {
         content,
         created_at,
         post_id,
-        user_id
+        user_name,
+        user_avatar
       `)
       .eq('is_deleted', false)
       .order('created_at', { ascending: false })
@@ -494,9 +501,8 @@ export async function getRecentComments(limit = 10): Promise<RecentComment[]> {
     if (error) throw error
     if (!comments || comments.length === 0) return []
 
-    // Get unique post IDs and user IDs
+    // Get unique post IDs
     const postIds = [...new Set(comments.map(c => c.post_id))]
-    const userIds = [...new Set(comments.map(c => c.user_id).filter(Boolean))]
 
     // Fetch post info (from posts_localized for titles)
     const { data: posts } = await supabase
@@ -505,28 +511,19 @@ export async function getRecentComments(limit = 10): Promise<RecentComment[]> {
       .in('id', postIds)
       .eq('locale', 'en') // Use English titles for admin dashboard
 
-    // Fetch user info from auth.users
-    const { data: users } = await supabase.auth.admin.listUsers()
-
-    // Create maps for quick lookup
+    // Create map for quick lookup
     const postsMap = new Map(posts?.map(p => [p.id, p]) || [])
-    const usersMap = new Map(
-      users.users
-        ?.filter(u => userIds.includes(u.id))
-        .map(u => [u.id, u]) || []
-    )
 
-    // Enrich comments with post and user info
+    // Enrich comments with post info
     return comments.map(comment => {
       const post = postsMap.get(comment.post_id)
-      const user = comment.user_id ? usersMap.get(comment.user_id) : null
 
       return {
         id: comment.id,
         content: comment.content,
         created_at: comment.created_at,
-        user_name: user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email || 'Anonymous',
-        user_avatar: user?.user_metadata?.avatar_url || null,
+        user_name: comment.user_name || 'Anonymous',
+        user_avatar: comment.user_avatar,
         post_slug: post?.slug || '',
         post_title: post?.title || 'Unknown Post',
       }
@@ -534,5 +531,146 @@ export async function getRecentComments(limit = 10): Promise<RecentComment[]> {
   } catch (error) {
     console.error('Error fetching recent comments:', error)
     return []
+  }
+}
+
+export interface AdminComment {
+  id: string
+  content: string
+  created_at: string
+  user_name: string
+  user_avatar: string | null
+  user_id: string | null
+  post_slug: string
+  post_title: string
+  post_id: string
+  is_deleted: boolean
+  is_pinned: boolean
+  is_edited: boolean
+  reply_count: number
+  parent_id: string | null
+}
+
+/**
+ * Get all comments for admin management page
+ * Supports pagination, filtering, and search
+ */
+export async function getAllCommentsAdmin(options?: {
+  limit?: number
+  offset?: number
+  postId?: string
+  searchQuery?: string
+  status?: 'all' | 'active' | 'deleted' | 'pinned'
+  sortBy?: 'newest' | 'oldest'
+}): Promise<{ comments: AdminComment[]; total: number }> {
+  const supabase = await createClient()
+  const {
+    limit = 20,
+    offset = 0,
+    postId,
+    searchQuery,
+    status = 'all',
+    sortBy = 'newest',
+  } = options || {}
+
+  try {
+    // Build query
+    let query = supabase
+      .from('comments')
+      .select('*', { count: 'exact' })
+
+    // Filter by post
+    if (postId) {
+      query = query.eq('post_id', postId)
+    }
+
+    // Filter by status
+    if (status === 'active') {
+      query = query.eq('is_deleted', false)
+    } else if (status === 'deleted') {
+      query = query.eq('is_deleted', true)
+    } else if (status === 'pinned') {
+      query = query.eq('is_pinned', true).eq('is_deleted', false)
+    }
+    // 'all' means no filter
+
+    // Search by content or user name
+    if (searchQuery && searchQuery.trim() !== '') {
+      query = query.or(`content.ilike.%${searchQuery}%,user_name.ilike.%${searchQuery}%`)
+    }
+
+    // Sort
+    if (sortBy === 'newest') {
+      query = query.order('created_at', { ascending: false })
+    } else {
+      query = query.order('created_at', { ascending: true })
+    }
+
+    // Pagination
+    query = query.range(offset, offset + limit - 1)
+
+    const { data: comments, error, count } = await query
+
+    if (error) throw error
+    if (!comments || comments.length === 0) return { comments: [], total: count || 0 }
+
+    // Get unique post IDs
+    const postIds = [...new Set(comments.map(c => c.post_id))]
+
+    // Fetch post info
+    const { data: posts } = await supabase
+      .from('posts_localized')
+      .select('id, slug, title')
+      .in('id', postIds)
+      .eq('locale', 'en')
+
+    // Create map for quick lookup
+    const postsMap = new Map(posts?.map(p => [p.id, p]) || [])
+
+    // Count replies for each comment
+    const commentIds = comments.map(c => c.id)
+    const { data: repliesCount } = await supabase
+      .from('comments')
+      .select('parent_id')
+      .in('parent_id', commentIds)
+      .eq('is_deleted', false)
+
+    // Create reply count map
+    const replyCountMap = new Map<string, number>()
+    repliesCount?.forEach(reply => {
+      if (reply.parent_id) {
+        replyCountMap.set(reply.parent_id, (replyCountMap.get(reply.parent_id) || 0) + 1)
+      }
+    })
+
+    // Enrich comments with post info and reply counts
+    const enrichedComments = comments.map(comment => {
+      const post = postsMap.get(comment.post_id)
+
+      return {
+        id: comment.id,
+        content: comment.content,
+        created_at: comment.created_at,
+        user_name: comment.user_name || 'Anonymous',
+        user_avatar: comment.user_avatar,
+        user_id: comment.user_id,
+        post_slug: post?.slug || '',
+        post_title: post?.title || 'Unknown Post',
+        post_id: comment.post_id,
+        is_deleted: comment.is_deleted,
+        is_pinned: comment.is_pinned,
+        is_edited: comment.is_edited,
+        reply_count: replyCountMap.get(comment.id) || 0,
+        parent_id: comment.parent_id,
+      }
+    })
+
+    return {
+      comments: enrichedComments,
+      total: count || 0,
+    }
+  } catch (error) {
+    console.error('Error fetching all comments:', error)
+    return { comments: [], total: 0 }
   }
 }

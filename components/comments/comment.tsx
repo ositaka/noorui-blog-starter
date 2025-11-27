@@ -32,9 +32,6 @@ export interface CommentProps {
   postAuthorId?: string
   depth?: number
   maxDepth?: number
-  onReply?: (commentId: string) => void
-  onEdit?: (commentId: string) => void
-  onDelete?: (commentId: string) => void
 }
 
 /**
@@ -55,7 +52,7 @@ export interface CommentProps {
  *   currentUser={user}
  *   postAuthorId={post.author_id}
  *   depth={0}
- *   maxDepth={3}
+ *   maxDepth={1}
  * />
  */
 export function Comment({
@@ -64,10 +61,7 @@ export function Comment({
   currentUser,
   postAuthorId,
   depth = 0,
-  maxDepth = 3,
-  onReply,
-  onEdit,
-  onDelete,
+  maxDepth = 1,
 }: CommentProps) {
   const router = useRouter()
   const [showReplyForm, setShowReplyForm] = React.useState(false)
@@ -96,12 +90,10 @@ export function Comment({
   const canDelete = isOwnComment || isPostAuthor
   const canPin = isPostAuthor
 
-  // Get user info
-  // Note: Since we can't fetch auth.users directly, we'll need to enhance this later
-  // For now, show current user's name if it's their comment, otherwise show Anonymous
+  // Get user info from denormalized fields (stored when comment was created)
   const isOwnCommentCheck = currentUser?.id === comment.user_id
-  const userName = isOwnCommentCheck ? currentUser.name : (comment.user?.user_metadata?.name || comment.user?.user_metadata?.full_name || comment.user?.email || 'Anonymous')
-  const userAvatar = isOwnCommentCheck ? currentUser.avatar : comment.user?.user_metadata?.avatar_url
+  const userName = isOwnCommentCheck ? currentUser.name : (comment.user_name || 'Anonymous')
+  const userAvatar = isOwnCommentCheck ? currentUser.avatar : comment.user_avatar
 
   // Handle reaction toggle (LinkedIn-style: one reaction per user)
   const handleReact = async (emoji: string) => {
@@ -167,10 +159,8 @@ export function Comment({
           hasReacted: r.hasReacted,
         }))
       )
-    } else {
-      // Refresh to sync server state
-      router.refresh()
     }
+    // Note: We rely on optimistic updates for reactions, no need to refresh
   }
 
   // Handle delete
@@ -183,7 +173,6 @@ export function Comment({
       toast.success('Comment deleted')
       setShowDeleteDialog(false)
       router.refresh()
-      onDelete?.(comment.id)
     } else {
       toast.error(result.error || 'Failed to delete comment')
     }
@@ -204,9 +193,10 @@ export function Comment({
   }
 
   // Handle reply submission
-  const handleReplySubmit = (content: string) => {
+  const handleReplySubmit = () => {
     setShowReplyForm(false)
-    router.refresh()
+    // Force a hard refresh to show the new reply
+    window.location.reload()
   }
 
   // Handle edit
@@ -225,10 +215,7 @@ export function Comment({
     if (result.success) {
       toast.success('Comment updated')
       setShowEditForm(false)
-      // Refresh to show updated comment
       router.refresh()
-      // Trigger parent callback if provided
-      onEdit?.(comment.id)
     } else {
       toast.error(result.error || 'Failed to update comment')
     }
@@ -386,9 +373,6 @@ export function Comment({
           postAuthorId={postAuthorId}
           depth={depth + 1}
           maxDepth={maxDepth}
-          onReply={onReply}
-          onEdit={onEdit}
-          onDelete={onDelete}
         />
       )}
 

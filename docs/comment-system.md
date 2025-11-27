@@ -129,11 +129,10 @@ A comprehensive, RTL-first comment system designed for multilingual blogs and co
 
 ### 3. Threading & Replies
 
-**Depth:** Up to 3 levels deep
-- Level 0: Top-level comments
-- Level 1: Direct replies
-- Level 2: Nested replies
-- Level 3+: Flattened (reply to deepest level)
+**Depth:** Only 1 level (exactly like LinkedIn)
+- Level 0: Top-level comments (can be replied to)
+- Level 1: Direct replies (cannot be replied to)
+- No nested replies to replies allowed
 
 **Visual Indentation:**
 ```css
@@ -418,7 +417,7 @@ interface CommentSectionProps {
   // Configuration
   sortBy?: 'newest' | 'oldest' | 'most-reactions';
   allowReplies?: boolean;
-  maxDepth?: number; // Default: 3
+  maxDepth?: number; // Default: 1 (LinkedIn-style: no replies to replies)
   enableReactions?: boolean;
   enableMarkdown?: boolean;
 
@@ -594,7 +593,7 @@ CREATE INDEX idx_comments_parent_id ON comments(parent_id);
 CREATE INDEX idx_comments_user_id ON comments(user_id);
 CREATE INDEX idx_comments_created_at ON comments(created_at DESC);
 
--- Trigger: Prevent deeply nested threads (max 3 levels)
+-- Trigger: Prevent deeply nested threads (LinkedIn-style: max 1 level)
 CREATE OR REPLACE FUNCTION check_comment_depth()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -603,8 +602,8 @@ DECLARE
 BEGIN
   WHILE current_parent IS NOT NULL LOOP
     depth := depth + 1;
-    IF depth >= 3 THEN
-      RAISE EXCEPTION 'Maximum comment depth (3 levels) exceeded';
+    IF depth >= 2 THEN
+      RAISE EXCEPTION 'Maximum comment depth (1 level) exceeded - replies to replies are not allowed';
     END IF;
     SELECT parent_id INTO current_parent FROM comments WHERE id = current_parent;
   END LOOP;
@@ -830,11 +829,17 @@ export function Comment({ author, content, dir, locale, ...props }: CommentProps
 **Solution:** Merged display `[👍❤️💡 20]` keeps focus on content
 **Result:** Cleaner, more professional, better UX
 
-### Why Max 3 Levels of Threading?
+### Why Only 1 Level of Threading (LinkedIn-Style)?
 
-**Research:** Beyond 3 levels, threads become hard to follow
-**Solution:** 3 levels sufficient for 95% of discussions
-**Result:** Better readability on mobile and desktop
+**Research:** LinkedIn's approach (no replies to replies) is the cleanest for professional discussions
+**Solution:** Only 1 level - you can reply to top-level comments, but not to replies
+**Benefits:**
+- Simplest possible threading model
+- Zero confusion about nesting
+- Perfect mobile experience
+- Extremely easy to scan and read
+- Forces focused, top-level discussions
+**Result:** Professional comment system that matches LinkedIn's proven UX
 
 ### Why Separate Generic Components?
 

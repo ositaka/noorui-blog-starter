@@ -53,7 +53,7 @@ export interface CommentSectionProps {
  *   locale="en"
  *   currentUser={user}
  *   sortBy="newest"
- *   maxDepth={3}
+ *   maxDepth={1}
  * />
  */
 export function CommentSection({
@@ -63,7 +63,7 @@ export function CommentSection({
   currentUser,
   sortBy: initialSortBy = 'newest',
   allowReplies = true,
-  maxDepth = 3,
+  maxDepth = 1,
   enableReactions = true,
   className,
 }: CommentSectionProps) {
@@ -110,8 +110,9 @@ export function CommentSection({
   }
 
   // Handle comment submission
-  const handleCommentSubmit = () => {
-    router.refresh() // Refresh to show new comment
+  const handleCommentSubmit = async () => {
+    // Refetch comments to show the new one
+    await fetchComments()
   }
 
   // Determine text direction
@@ -213,7 +214,12 @@ export function CommentSection({
       {!currentUser && (
         <div className="text-center py-6 border-t">
           <p className="text-sm text-muted-foreground">
-            {t.signInToComment}
+            <a
+              href={`/${locale}/admin/login`}
+              className="hover:underline hover:text-foreground transition-colors"
+            >
+              {t.signInToComment}
+            </a>
           </p>
         </div>
       )}

@@ -201,7 +201,7 @@ export function PostPageClient({ locale, post, relatedPosts, mdxContent, current
               locale={locale}
               currentUser={currentUser}
               sortBy="newest"
-              maxDepth={3}
+              maxDepth={1}
               enableReactions={true}
             />
           </div>

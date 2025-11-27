@@ -24,7 +24,7 @@ export interface CommentFormProps {
     avatar?: string
     email: string
   }
-  onSubmit?: (content: string) => void
+  onSubmit?: (content: string) => void | Promise<void>
   onCancel?: () => void
   className?: string
 }
@@ -113,9 +113,10 @@ export function CommentForm({
         })
 
         if (result.success) {
+          // Wait for parent callback to complete (e.g., router.refresh())
+          await onSubmit?.(content)
           toast.success('Comment posted successfully')
           setContent('')
-          onSubmit?.(content)
         } else {
           toast.error(result.error || 'Failed to post comment')
         }
