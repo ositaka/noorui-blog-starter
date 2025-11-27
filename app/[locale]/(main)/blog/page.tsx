@@ -7,8 +7,9 @@ interface Props {
   searchParams: Promise<{ page?: string; category?: string }>
 }
 
-// Force static generation - pre-render at build time
-export const dynamic = 'force-static'
+// Enable ISR with short revalidation for search params to work
+// This allows pagination and filtering to work dynamically
+export const revalidate = 300 // 5 minutes - faster than before
 
 const POSTS_PER_PAGE = 12
 

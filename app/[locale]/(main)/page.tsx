@@ -6,7 +6,7 @@ interface Props {
   params: Promise<{ locale: string }>
 }
 
-// Force static generation - pre-render at build time
+// Keep home page fully static (no search params needed)
 export const dynamic = 'force-static'
 
 export default async function HomePage({ params }: Props) {
