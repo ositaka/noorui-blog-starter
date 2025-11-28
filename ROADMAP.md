@@ -709,9 +709,9 @@ Description of each variant with visual examples.
 
 | Component | Description | Props | Status |
 |-----------|-------------|-------|--------|
-| `Blockquote` | Styled quote with optional author/source | `variant`, `author`, `source`, `cite` | ✅ Ready in Kitab |
-| `PullQuote` | Large highlighted quote for emphasis | `align` (left/center/right) | ✅ Ready in Kitab |
-| `Callout` | Info/warning/error/success boxes | `type`, `title`, `icon` | ✅ Ready in Kitab |
+| `Blockquote` | Styled quote with optional author/source | `variant`, `author`, `source`, `cite` | ✅ **Migrated to noorui-rtl v0.4.0** |
+| `PullQuote` | Large highlighted quote for emphasis | `align` (left/center/right) | ✅ **Migrated to noorui-rtl v0.4.0** |
+| `Callout` | Info/warning/error/success boxes | `type`, `title`, `icon` | ✅ **Migrated to noorui-rtl v0.4.0** |
 | `CodeBlock` | Enhanced code with copy, filename | `filename`, `language`, `copyable` | ✅ Ready in Kitab |
 | `MediaEmbed` | YouTube/Vimeo embeds | `url`, `aspectRatio`, `caption` | ✅ Ready in Kitab |
 | `YouTube` | YouTube convenience wrapper | `id`, `url`, `caption` | ✅ Ready in Kitab |
@@ -733,7 +733,7 @@ Description of each variant with visual examples.
 - [ ] `NewsletterForm`
 
 #### From Phase 4 (Admin Panel)
-- [ ] `StatsCard` - Dashboard statistics card with trend indicator
+- [x] `StatsCard` - Dashboard statistics card with trend indicator - ✅ **Migrated to noorui-rtl v0.4.0**
 - [ ] `PostsTable` - Posts DataTable with columns, filters, and actions
 - [ ] `PostFilters` - Filter controls for posts (search, status, category)
 - [ ] `PostEditor` - Multi-locale post editing form
@@ -764,6 +764,18 @@ Description of each variant with visual examples.
 
 #### Added in noorui-rtl v0.3.14
 - [x] **ButtonArrow component** - New button variant with semantic direction support (`forward`/`back`). Arrows automatically flip in RTL mode using `rtl:rotate-180`. Replaces the need for manual arrow icon handling with direction-aware buttons.
+
+#### Migrated to noorui-rtl v0.4.0 (2025-11-28) ✅
+- [x] **ReactionPicker** - LinkedIn/Discord-style emoji reaction picker. Migrated from Kitab to noorui-rtl. Now available as `import { ReactionPicker } from 'noorui-rtl'`.
+- [x] **UserBadge** - Role/status badge component with 5 variants. Migrated from Kitab to noorui-rtl. Now available as `import { UserBadge } from 'noorui-rtl'`.
+- [x] **ContentRenderer** - Markdown/HTML renderer with RTL auto-detection. Migrated from Kitab to noorui-rtl. Now available as `import { ContentRenderer } from 'noorui-rtl'`.
+- [x] **Kbd** - Keyboard shortcut display with platform detection. Migrated from Kitab to noorui-rtl. Now available as `import { Kbd } from 'noorui-rtl'`.
+- [x] **Callout** - Enhanced alert component with 5 types. Migrated from Kitab (mdx folder) to noorui-rtl. Now available as `import { Callout } from 'noorui-rtl'`.
+- [x] **Blockquote & PullQuote** - Styled quote components. Migrated from Kitab (mdx folder) to noorui-rtl. Now available as `import { Blockquote, PullQuote } from 'noorui-rtl'`.
+- [x] **StatsCard** - Dashboard statistics card. Migrated from Kitab (admin folder) to noorui-rtl. Now available as `import { StatsCard } from 'noorui-rtl'`.
+- [x] **useRelativeTime hook** - Multilingual relative timestamp formatting. Migrated from Kitab hooks to noorui-rtl. Now available as `import { useRelativeTime } from 'noorui-rtl'`.
+
+**Impact:** 8 components + 1 hook migrated from Kitab to noorui-rtl. These are now part of the core package and available to all noorui-rtl users. Kitab can now import these from the package instead of local files.
 
 #### Added in Kitab v0.1.x
 - [x] **Localized date formatting** - Dates now display in Arabic format (e.g., "٢٢ نوفمبر ٢٠٢٥") when in Arabic locale. Uses `Intl.DateTimeFormat` with locale-aware month names and numerals. Created `formatDate` utility in `lib/utils.ts`.
