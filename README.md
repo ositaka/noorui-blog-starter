@@ -2,7 +2,7 @@
 
 A production-ready multilingual blog starter showcasing RTL support and Arabic typography, built with [Noor UI](https://noorui.com), Next.js 16, and Supabase.
 
-**Live Demo**: [blog-starter.noorui.com](https://blog-starter.noorui.com)
+**Live Demo**: [kitab.noorui.com](https://kitab.noorui.com)
 
 ## ✨ Features
 

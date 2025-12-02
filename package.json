@@ -2,7 +2,7 @@
   "name": "kitab",
   "version": "0.1.0",
   "description": "A multilingual blog starter with full RTL/LTR support, built with Noor UI",
-  "homepage": "https://blog-starter.noorui.com",
+  "homepage": "https://kitab.noorui.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/ositaka/noorui-blog-starter"

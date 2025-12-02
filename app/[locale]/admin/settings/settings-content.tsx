@@ -168,7 +168,7 @@ export function SettingsContent({ locale, translations: t }: SettingsContentProp
           description={t.site.description}
         >
           <SettingsRow label={t.site.siteName} value="Kitab" />
-          <SettingsRow label={t.site.siteUrl} value="blog-starter.noorui.com" />
+          <SettingsRow label={t.site.siteUrl} value="kitab.noorui.com" />
           <SettingsRow label={t.site.locales} value={t.site.enabledLocales} />
         </SettingsCard>
 

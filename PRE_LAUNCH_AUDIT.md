@@ -64,7 +64,7 @@
 - ✅ **Version:** 0.1.0
 - ✅ **Description:** Clear and compelling
 - ✅ **Author:** Nuno Marques (info@ositaka.com, https://ositaka.com)
-- ✅ **Homepage:** https://blog-starter.noorui.com
+- ✅ **Homepage:** https://kitab.noorui.com
 - ✅ **Repository:** https://github.com/ositaka/noorui-blog-starter
 - ✅ **Keywords:** blog, rtl, ltr, bidirectional, arabic, urdu, multilingual, next.js, supabase, noor-ui
 - ✅ **License:** MIT
@@ -189,7 +189,7 @@ Before making the repository public:
 ### 1. Repository Setup
 - [ ] Add repository description: "✨ Kitab - Multilingual blog starter • 4 languages • RTL/LTR • MDX • Supabase • Next.js 16"
 - [ ] Add topics: `blog`, `rtl`, `ltr`, `multilingual`, `nextjs`, `supabase`, `mdx`, `noor-ui`, `starter-template`, `arabic`, `urdu`
-- [ ] Set repository website: https://blog-starter.noorui.com
+- [ ] Set repository website: https://kitab.noorui.com
 - [ ] Add to noor-ui main README as a starter template
 
 ### 2. Documentation Enhancements
@@ -200,7 +200,7 @@ Before making the repository public:
 
 ### 3. Deployment
 - [ ] Deploy to Vercel/Netlify
-- [ ] Configure custom domain (blog-starter.noorui.com)
+- [ ] Configure custom domain (kitab.noorui.com)
 - [ ] Set up Supabase project for demo
 - [ ] Seed demo database with sample content
 - [ ] Configure Google OAuth for admin access
