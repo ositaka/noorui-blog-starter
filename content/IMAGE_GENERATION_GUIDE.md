@@ -26,7 +26,7 @@ This document lists all placeholder images that need to be created using ChatGPT
 ## 1. Font Samples & Typography Images
 
 ### 1.1 Noto Sans Arabic Sample
-**File:** `/images/posts/fonts/noto-sans-arabic-sample.jpg`
+**File:** `/images/posts/fonts/noto-sans-arabic-sample.png`
 **Dimensions:** 800×600px
 **Used in:** Post #18 (Choosing Arabic Fonts)
 
@@ -36,7 +36,7 @@ Create a sophisticated typography specimen for Noto Sans Arabic. Minimalist comp
 ```
 
 ### 1.2 Cairo Font Sample
-**File:** `/images/posts/fonts/cairo-sample.jpg`
+**File:** `/images/posts/fonts/cairo-sample.png`
 **Dimensions:** 800×600px
 **Used in:** Post #18 (Choosing Arabic Fonts)
 
