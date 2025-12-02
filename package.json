@@ -5,7 +5,7 @@
   "homepage": "https://kitab.noorui.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ositaka/noorui-blog-starter"
+    "url": "https://github.com/ositaka/kitab--noorui-blog-starter"
   },
   "private": true,
   "scripts": {

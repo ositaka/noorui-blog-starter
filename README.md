@@ -85,7 +85,7 @@ A production-ready multilingual blog starter showcasing RTL support and Arabic t
 ### 1. Clone and Install
 
 ```bash
-git clone https://github.com/ositaka/noorui-blog-starter.git kitab
+git clone https://github.com/ositaka/kitab--noorui-blog-starter.git kitab
 cd kitab
 npm install
 ```

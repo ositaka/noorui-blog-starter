@@ -188,7 +188,7 @@ export function SettingsContent({ locale, translations: t }: SettingsContentProp
               asChild
             >
               <a
-                href="https://github.com/ositaka/noorui-blog-starter"
+                href="https://github.com/ositaka/kitab--noorui-blog-starter"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2"

@@ -43,7 +43,7 @@
 - ✅ SEO best practices section
 - ✅ License information with link to LICENSE file
 - ✅ Links to Noor UI documentation
-- ✅ **UPDATED:** Git clone URL (github.com/ositaka/noorui-blog-starter)
+- ✅ **UPDATED:** Git clone URL (github.com/ositaka/kitab--noorui-blog-starter)
 - ✅ **UPDATED:** Enhanced license section with copyright notice
 
 ### 2. ROADMAP.md (1,183 lines)
@@ -65,7 +65,7 @@
 - ✅ **Description:** Clear and compelling
 - ✅ **Author:** Nuno Marques (info@ositaka.com, https://ositaka.com)
 - ✅ **Homepage:** https://kitab.noorui.com
-- ✅ **Repository:** https://github.com/ositaka/noorui-blog-starter
+- ✅ **Repository:** https://github.com/ositaka/kitab--noorui-blog-starter
 - ✅ **Keywords:** blog, rtl, ltr, bidirectional, arabic, urdu, multilingual, next.js, supabase, noor-ui
 - ✅ **License:** MIT
 - ✅ **UPDATED:** Repository URL to match dedicated blog-starter repo
@@ -148,7 +148,7 @@ git commit -m "Release v0.1.0: Add LICENSE and update repository URLs
 
 - Add MIT LICENSE file with copyright notice
 - Update README.md with correct git clone URL
-- Update package.json repository URL to github.com/ositaka/noorui-blog-starter
+- Update package.json repository URL to github.com/ositaka/kitab--noorui-blog-starter
 - Enhance README license section with link to LICENSE file
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
@@ -171,12 +171,12 @@ Before making the repository public:
 - [x] .env.local exists but is gitignored (safe)
 - [x] README is comprehensive and professional
 - [x] package.json metadata is correct
-- [x] Repository URL updated (github.com/ositaka/noorui-blog-starter)
+- [x] Repository URL updated (github.com/ositaka/kitab--noorui-blog-starter)
 - [x] License field in package.json is "MIT"
 - [x] README links to LICENSE file
 - [ ] **Commit LICENSE, README.md, and package.json changes**
 - [ ] **Push to main branch**
-- [ ] **Create GitHub repository** (ositaka/noorui-blog-starter)
+- [ ] **Create GitHub repository** (ositaka/kitab--noorui-blog-starter)
 - [ ] **Make repository public on GitHub**
 - [ ] **Enable GitHub Issues**
 - [ ] **Enable GitHub Discussions** (optional)

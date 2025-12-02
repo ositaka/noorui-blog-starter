@@ -131,7 +131,7 @@ export function Footer({ locale }: FooterProps) {
             <h3 className="font-semibold mb-4">{t.sections.resources}</h3>
             <ul className="space-y-2">
               <li>
-                <a href="https://github.com/ositaka/noorui-blog-starter" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <a href="https://github.com/ositaka/kitab--noorui-blog-starter" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   {t.links.github}
                 </a>
               </li>
