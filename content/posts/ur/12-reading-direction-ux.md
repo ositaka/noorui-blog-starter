@@ -7,7 +7,7 @@ author: "noor-team"
 publishedAt: "2024-12-22"
 readingTime: 9
 featured: false
-featuredImage: "/images/posts/reading-direction-ux.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/reading-direction-ux.jpg"
 tags: ["ux", "صارف-تجربہ", "rtl", "ڈیزائن", "ثقافت"]
 ---
 

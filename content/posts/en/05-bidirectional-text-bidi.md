@@ -7,7 +7,7 @@ author: "karim-benali"
 publishedAt: "2025-01-06"
 readingTime: 13
 featured: false
-featuredImage: "/images/posts/bidirectional-text.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/bidirectional-text.jpg"
 tags: ["bidi", "unicode", "rtl", "algorithms", "text-rendering"]
 ---
 

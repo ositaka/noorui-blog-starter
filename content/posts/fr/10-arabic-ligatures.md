@@ -7,7 +7,7 @@ author: "amira-hassan"
 publishedAt: "2024-12-22"
 readingTime: 10
 featured: false
-featuredImage: "/images/posts/arabic-ligatures.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/arabic-ligatures.jpg"
 tags: ["arabe", "ligatures", "typographie", "opentype", "polices-web"]
 ---
 

@@ -7,7 +7,7 @@ author: "amira-hassan"
 publishedAt: "2025-01-12"
 readingTime: 10
 featured: false
-featuredImage: "/images/posts/urdu-nastaliq-script.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/urdu-nastaliq-script.jpg"
 tags: ["اردو", "نستعلیق", "خطاطی", "جنوبی-ایشیا", "پاکستان"]
 ---
 

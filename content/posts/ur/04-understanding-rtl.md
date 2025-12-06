@@ -7,7 +7,7 @@ author: "karim-benali"
 publishedAt: "2025-01-08"
 readingTime: 11
 featured: true
-featuredImage: "/images/posts/understanding-rtl.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/understanding-rtl.jpg"
 tags: ["rtl", "ltr", "بین-الاقوامی-سازی", "i18n", "ویب-ڈویلپمنٹ"]
 ---
 

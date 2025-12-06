@@ -7,7 +7,7 @@ author: "amira-hassan"
 publishedAt: "2024-12-25"
 readingTime: 11
 featured: false
-featuredImage: "/images/posts/nastaliq-vs-naskh.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/nastaliq-vs-naskh.jpg"
 tags: ["nastaliq", "naskh", "calligraphie", "typographie", "arabe"]
 ---
 

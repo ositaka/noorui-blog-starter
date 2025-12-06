@@ -7,7 +7,7 @@ author: "amira-hassan"
 publishedAt: "2025-01-15"
 readingTime: 12
 featured: true
-featuredImage: "/images/posts/history-of-arabic-script.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/history-of-arabic-script.jpg"
 tags: ["arabe", "histoire", "calligraphie", "écritures"]
 ---
 

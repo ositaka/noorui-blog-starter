@@ -7,7 +7,7 @@ author: "karim-benali"
 publishedAt: "2025-01-04"
 readingTime: 7
 featured: false
-featuredImage: "/images/posts/numbers-rtl.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/numbers-rtl.jpg"
 tags: ["نمبر", "rtl", "عربی", "لوکلائزیشن", "i18n"]
 ---
 

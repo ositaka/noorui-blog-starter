@@ -7,7 +7,7 @@ author: "fatima-zahra"
 publishedAt: "2024-12-26"
 readingTime: 12
 featured: false
-featuredImage: "/images/posts/arabic-ligatures.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/arabic-ligatures.jpg"
 tags: ["عربی", "جوڑ", "ٹائپوگرافی", "اوپن-ٹائپ", "خطاطی"]
 ---
 

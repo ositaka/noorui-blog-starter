@@ -7,7 +7,7 @@ author: "fatima-zahra"
 publishedAt: "2024-12-24"
 readingTime: 14
 featured: false
-featuredImage: "/images/posts/islamic-calligraphy.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/islamic-calligraphy.jpg"
 tags: ["خطاطی", "اسلامی-فن", "ثقافت", "ڈیزائن", "روحانیت"]
 ---
 

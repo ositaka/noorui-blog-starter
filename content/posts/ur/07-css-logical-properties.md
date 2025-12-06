@@ -7,7 +7,7 @@ author: "karim-benali"
 publishedAt: "2025-01-02"
 readingTime: 9
 featured: false
-featuredImage: "/images/posts/css-logical-properties.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/css-logical-properties.jpg"
 tags: ["css", "منطقی-خصوصیات", "rtl", "لے-آؤٹ", "i18n"]
 ---
 

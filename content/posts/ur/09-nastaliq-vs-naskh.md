@@ -7,7 +7,7 @@ author: "amira-hassan"
 publishedAt: "2024-12-28"
 readingTime: 10
 featured: false
-featuredImage: "/images/posts/nastaliq-vs-naskh.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/nastaliq-vs-naskh.jpg"
 tags: ["نستعلیق", "نسخ", "ٹائپوگرافی", "عربی", "اردو"]
 ---
 

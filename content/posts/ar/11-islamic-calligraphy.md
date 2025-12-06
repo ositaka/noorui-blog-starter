@@ -7,7 +7,7 @@ author: "amira-hassan"
 publishedAt: "2024-12-18"
 readingTime: 14
 featured: true
-featuredImage: "/images/posts/islamic-calligraphy.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/islamic-calligraphy.jpg"
 tags: ["خط", "فن-إسلامي", "طباعة", "ثقافة", "تاريخ"]
 ---
 

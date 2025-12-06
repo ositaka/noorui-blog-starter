@@ -7,7 +7,7 @@ author: "karim-benali"
 publishedAt: "2024-12-30"
 readingTime: 11
 featured: false
-featuredImage: "/images/posts/common-rtl-bugs.jpg"
+featuredImage: "https://jifbljttgucqvencyqhh.supabase.co/storage/v1/object/public/images/posts/common-rtl-bugs.jpg"
 tags: ["rtl", "ڈیبگنگ", "css", "مسائل", "حل"]
 ---
 
